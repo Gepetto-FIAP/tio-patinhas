@@ -1,0 +1,39 @@
+LISTA DE USUÁRIOS:
+=================
+
+Nome: Manoel
+Email: manoel@gmail.com
+País: Brasil
+Estado: Bahia
+Cidade: Xique-xique
+Saldo: R$ 10000.0
+Taxa de Transação: 2.0%
+Tipo: Pessoa Física
+
+Nome: Neymar
+Email: neymar@gmail.com
+País: Brasil
+Estado: São Paulo
+Cidade: Santos
+Saldo: R$ 1000000.0
+Taxa de Transação: 2.0%
+Tipo: Pessoa Física
+
+Nome: Gerson
+Email: gerson@gmail.com
+País: Brasil
+Estado: Rio de Janeiro
+Cidade: Rio de Janeiro
+Saldo: R$ 100000.0
+Taxa de Transação: 2.0%
+Tipo: Pessoa Física
+
+Nome: FIAP
+Email: fiap@fiap.com
+País: Brasil
+Estado: Sao Paulo
+Cidade: Sao Paulo
+Saldo: R$ 0.0
+Taxa de Transação: 4.0%
+Tipo: Pessoa Jurídica
+
