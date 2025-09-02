@@ -152,7 +152,182 @@ public class UsuarioDAO {
         return usuario;
     }
 
+    public int inserir(Usuario usuario) throws SQLException {
+        String sqlUsuario = "INSERT INTO T_USUARIO (tipo, email, senha, pais, estado, cidade, rua, numero_imovel) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS)) {
+            
+            stmt.setString(1, usuario.tipo);
+            stmt.setString(2, usuario.email);
+            stmt.setString(3, usuario.senha);
+            stmt.setString(4, usuario.pais);
+            stmt.setString(5, usuario.estado);
+            stmt.setString(6, usuario.cidade);
+            stmt.setString(7, usuario.rua);
+            stmt.setString(8, usuario.numero);
+            
+            int rowsInserted = stmt.executeUpdate();
+            
+            if (rowsInserted > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int userId = generatedKeys.getInt(1);
+                        usuario.id = userId;
+                        
+                        if (usuario instanceof PessoaFisica) {
+                            inserirPessoaFisica((PessoaFisica) usuario);
+                        } else if (usuario instanceof PessoaJuridica) {
+                            inserirPessoaJuridica((PessoaJuridica) usuario);
+                        }
+                        
+                        CarteiraDAO carteiraDAO = new CarteiraDAO();
+                        Carteira carteira = new Carteira(usuario);
+                        carteiraDAO.inserir(carteira);
+                        usuario.setCarteira(carteira);
+                        
+                        return userId;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+    
+    private void inserirPessoaFisica(PessoaFisica pf) throws SQLException {
+        String sqlPf = "INSERT INTO T_PF (id_usuario, cpf, genero, idade, nome, sobrenome) VALUES (?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlPf)) {
+            
+            stmt.setInt(1, pf.getId());
+            stmt.setString(2, pf.getCpf());
+            stmt.setString(3, pf.getGenero());
+            stmt.setInt(4, pf.getIdade());
+            stmt.setString(5, pf.getNome());
+            stmt.setString(6, pf.getSobrenome());
+            
+            stmt.executeUpdate();
+        }
+    }
+    
+    private void inserirPessoaJuridica(PessoaJuridica pj) throws SQLException {
+        String sqlPj = "INSERT INTO T_PJ (id_usuario, cnpj, ramo, nome_fantasia) VALUES (?, ?, ?, ?)";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlPj)) {
+            
+            stmt.setInt(1, pj.getId());
+            stmt.setString(2, pj.getCnpj());
+            stmt.setString(3, pj.getRamo());
+            stmt.setString(4, pj.getNome());
+            
+            stmt.executeUpdate();
+        }
+    }
 
+    public boolean atualizar(Usuario usuario) throws SQLException {
+        String sqlUsuario = "UPDATE T_USUARIO SET tipo = ?, email = ?, senha = ?, pais = ?, estado = ?, cidade = ?, rua = ?, numero_imovel = ? WHERE id_usuario = ?";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlUsuario)) {
+            
+            stmt.setString(1, usuario.tipo);
+            stmt.setString(2, usuario.email);
+            stmt.setString(3, usuario.senha);
+            stmt.setString(4, usuario.pais);
+            stmt.setString(5, usuario.estado);
+            stmt.setString(6, usuario.cidade);
+            stmt.setString(7, usuario.rua);
+            stmt.setString(8, usuario.numero);
+            stmt.setInt(9, usuario.getId());
+            
+            int rowsUpdated = stmt.executeUpdate();
+            
+            if (rowsUpdated > 0) {
+                if (usuario instanceof PessoaFisica) {
+                    return atualizarPessoaFisica((PessoaFisica) usuario);
+                } else if (usuario instanceof PessoaJuridica) {
+                    return atualizarPessoaJuridica((PessoaJuridica) usuario);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean atualizarPessoaFisica(PessoaFisica pf) throws SQLException {
+        String sqlPf = "UPDATE T_PF SET cpf = ?, genero = ?, idade = ?, nome = ?, sobrenome = ? WHERE id_usuario = ?";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlPf)) {
+            
+            stmt.setString(1, pf.getCpf());
+            stmt.setString(2, pf.getGenero());
+            stmt.setInt(3, pf.getIdade());
+            stmt.setString(4, pf.getNome());
+            stmt.setString(5, pf.getSobrenome());
+            stmt.setInt(6, pf.getId());
+            
+            return stmt.executeUpdate() > 0;
+        }
+    }
+    
+    private boolean atualizarPessoaJuridica(PessoaJuridica pj) throws SQLException {
+        String sqlPj = "UPDATE T_PJ SET cnpj = ?, ramo = ?, nome_fantasia = ? WHERE id_usuario = ?";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sqlPj)) {
+            
+            stmt.setString(1, pj.getCnpj());
+            stmt.setString(2, pj.getRamo());
+            stmt.setString(3, pj.getNome());
+            stmt.setInt(4, pj.getId());
+            
+            return stmt.executeUpdate() > 0;
+        }
+    }
 
-
+    public boolean deletar(int idUsuario) throws SQLException {
+        try (Connection conn = ConnectionFactory.getConnection()) {
+            conn.setAutoCommit(false);
+            
+            try {
+                String sqlDeletePf = "DELETE FROM T_PF WHERE id_usuario = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(sqlDeletePf)) {
+                    stmt.setInt(1, idUsuario);
+                    stmt.executeUpdate();
+                }
+                
+                String sqlDeletePj = "DELETE FROM T_PJ WHERE id_usuario = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(sqlDeletePj)) {
+                    stmt.setInt(1, idUsuario);
+                    stmt.executeUpdate();
+                }
+                
+                CarteiraDAO carteiraDAO = new CarteiraDAO();
+                carteiraDAO.deletar(idUsuario);
+                
+                String sqlDeleteUsuario = "DELETE FROM T_USUARIO WHERE id_usuario = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(sqlDeleteUsuario)) {
+                    stmt.setInt(1, idUsuario);
+                    int rowsDeleted = stmt.executeUpdate();
+                    
+                    if (rowsDeleted > 0) {
+                        conn.commit();
+                        return true;
+                    }
+                }
+                
+                conn.rollback();
+                return false;
+                
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }
+    }
 }

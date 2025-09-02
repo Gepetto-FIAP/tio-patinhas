@@ -73,6 +73,35 @@ public class CarteiraDAO {
         return saldo;
     }
 
+    public void inserir(Carteira carteira) throws SQLException {
+        String sql = "INSERT INTO T_CARTEIRA (saldo_em_real, id_usuario) VALUES (?, ?)";
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            
+            stmt.setDouble(1, carteira.getSaldo());
+            stmt.setInt(2, carteira.getUsuario().getId());
+            
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        carteira.setIdCarteira(generatedKeys.getInt(1));
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean deletar(int idUsuario) throws SQLException {
+        String sql = "DELETE FROM T_CARTEIRA WHERE id_usuario = ?";
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, idUsuario);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
     public void fecharConexao() throws SQLException {
         conexao.close();
     }
