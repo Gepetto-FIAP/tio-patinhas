@@ -12,6 +12,10 @@ public class Carteira {
     private List<Transferencia> transferencias;
     private double saldoEmReal;
 
+    public Carteira() {
+        this.investimentos = new ArrayList<>();
+        this.transferencias = new ArrayList<>();
+    }
 
     public Carteira( Usuario usuario) {
         this.usuario = usuario;
@@ -21,16 +25,8 @@ public class Carteira {
     }
 
     public void adicionarSaldo(double valor) {
-        try {
-            CarteiraDAO dao = new CarteiraDAO();
-            this.saldoEmReal += valor;
-            dao.depositar(this.id, this.saldoEmReal);
-            dao.fecharConexao();
-
-            System.out.printf("[Log] R$ %.2f foi adicionado na conta de %s \n", valor, this.usuario.getNome());
-        } catch (SQLException e) {
-            System.out.println("[Erro] Não foi possível adicionar saldo: " + e.getMessage());
-        }
+        this.saldoEmReal += valor;
+        System.out.printf("[Log] R$ %.2f foi adicionado na conta de %s \n", valor, this.usuario.getNome());
     }
 
     public void sacarSaldo (double valor, String contaBancaria) {
@@ -105,10 +101,11 @@ public class Carteira {
         investimento.validarTransacao(quantidadeMoeda, TipoOperacao.VENDA, novaTransacao, valorLiquido, valorTaxa);
     }
 
-    public void transferirSaldo(Usuario usuarioDestinatario, double valorTransferencia) {
-        System.out.printf("\n[Log] %s está realizando transferencia de saldo...\n", this.usuario.getNome());
+    public void transferirSaldo(Usuario usuarioRemetente, Usuario usuarioDestinatario, double valorTransferencia) {
+        System.out.printf("\n[Log] %s está realizando transferencia de saldo...\n", usuarioRemetente.getNome());
+
         Transferencia novaTransferencia = new Transferencia(
-                this,
+                usuarioRemetente.getCarteira(),
                 usuarioDestinatario.getCarteira(),
                 valorTransferencia,
                 Status.PENDENTE,
@@ -116,9 +113,9 @@ public class Carteira {
                 ""
         );
 
-        this.transferencias.add(novaTransferencia);
+        usuarioRemetente.getCarteira().getTransferencias().add(novaTransferencia);
         usuarioDestinatario.getCarteira().getTransferencias().add(novaTransferencia);
-        novaTransferencia.validarTransferencia(usuarioDestinatario.getCarteira(), valorTransferencia);
+        novaTransferencia.validarTransferencia(usuarioRemetente.getCarteira(), usuarioDestinatario.getCarteira(), valorTransferencia);
     }
 
     public void consultarTransacao (int id) {
@@ -163,16 +160,57 @@ public class Carteira {
         return false;
     }
 
+    public boolean removerSaldoCarteira(double valor, Carteira carteira) {
+        try {
+            CarteiraDAO dao = new CarteiraDAO();
+            dao.sacar(carteira.id, valor);
+            dao.fecharConexao();
+
+            System.out.printf("[Log] R$ %.2f foi removido da conta de %s \n", valor, carteira.usuario.getNome());
+            return true;
+        } catch (SQLException e) {
+            System.out.println("[Erro] Não foi possível remover saldo: " + e.getMessage());
+        }
+        return false;
+    }
+
+
+    public void adicionarSaldoCarteira(double valor, Carteira carteira) {
+        try {
+            CarteiraDAO dao = new CarteiraDAO();
+
+            dao.depositar(carteira.id, valor);
+            dao.fecharConexao();
+
+            System.out.printf("[Log] R$ %.2f foi adicionado na conta de %s \n", valor, carteira.usuario.getNome());
+        } catch (SQLException e) {
+            System.out.println("[Erro] Não foi possível adicionar saldo: " + e.getMessage());
+        }
+    }
+
     //getters
     public List<Transferencia> getTransferencias () {
         return this.transferencias;
     }
+
     public double getSaldo() {
-        return saldoEmReal;
+        return this.saldoEmReal;
     }
+
     public String getNomeUsuario(){
         return usuario.getNome();
     }
 
+    //setters
+    public void setIdCarteira(int id){
+        this.id = id;
+    }
 
+    public void setUsuario(Usuario usuario){
+        this.usuario = usuario;
+    }
+
+    public void setSaldoCarteira(double saldo){
+        this.saldoEmReal = saldo;
+    }
 }

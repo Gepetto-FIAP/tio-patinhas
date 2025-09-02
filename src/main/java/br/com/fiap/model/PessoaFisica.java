@@ -13,6 +13,7 @@ public class PessoaFisica extends Usuario {
     }
 
     public PessoaFisica(
+            int id,
             String tipo,
             String email,
             String senha,
@@ -28,13 +29,16 @@ public class PessoaFisica extends Usuario {
             String nome,
             String sobrenome
     ) {
-        super(tipo, email, senha, pais, estado, cidade, bairro, rua, numero);
+        super(id, tipo, email, senha, pais, estado, cidade, bairro, rua, numero);
         this.cpf = cpf;
         this.genero = genero;
         this.idade = idade;
         this.nome = nome;
         this.sobrenome = sobrenome;
         this.taxaTransacao = 0.02;
+    }
+
+    public PessoaFisica(String pf, String mail, String s, String brasil, String bahia, String s1, String centro, String ruaA, String number, String s2, String masculino, int i, String manoel, String souza) {
     }
 
     //getters

@@ -11,6 +11,7 @@ public class PessoaJuridica extends Usuario {
     }
 
     public PessoaJuridica(
+            int id,
             String tipo,
             String email,
             String senha,
@@ -24,7 +25,7 @@ public class PessoaJuridica extends Usuario {
             String ramo,
             String nomeFantasia
     ) {
-        super(tipo, email, senha, pais, estado, cidade, bairro, rua, numero);
+        super(id, tipo, email, senha, pais, estado, cidade, bairro, rua, numero);
         this.cnpj = cnpj;
         this.ramo = ramo;
         this.nomeFantasia = nomeFantasia;

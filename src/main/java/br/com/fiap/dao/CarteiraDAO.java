@@ -14,16 +14,16 @@ public class CarteiraDAO {
     }
 
     public Carteira buscarPorId(int id) throws SQLException {
-        String sql = "SELECT id_carteira, saldo_em_real, id_usuario FROM T_CARTEIRA WHERE id_carteira = ?";
+        String sql = "SELECT id_carteira, saldo_em_real, id_usuario FROM T_CARTEIRA WHERE id_usuario = ?";
         try (PreparedStatement ps = conexao.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-//            if (rs.next()) {
-//                Carteira c = new Carteira();
-//                c.setIdCarteira(rs.getInt("id_carteira"));
-//                c.setSaldoEmReal(rs.getDouble("saldo_em_real"));
-//                return c;
-//            }
+            if (rs.next()) {
+                Carteira c = new Carteira();
+                c.setIdCarteira(rs.getInt("id_carteira"));
+                c.setSaldoCarteira(rs.getDouble("saldo_em_real"));
+                return c;
+            }
         }
         return null;
     }
@@ -53,6 +53,24 @@ public class CarteiraDAO {
         } else {
             throw new SQLException("Saldo insuficiente.");
         }
+    }
+
+    public double getSaldo(int idUsuario) throws SQLException {
+        String sql = "SELECT saldo_em_real FROM T_CARTEIRA WHERE id_usuario = ?";
+        double saldo = 0.0;
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idUsuario);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    saldo = rs.getDouble("saldo_em_real");
+                }
+            }
+        }
+
+        return saldo;
     }
 
     public void fecharConexao() throws SQLException {

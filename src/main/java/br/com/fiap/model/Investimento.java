@@ -18,7 +18,7 @@ public class Investimento {
     public void validarTransacao(double quantidadeMoeda, TipoOperacao tipoOperacao, Transacao novaTransacao, double valorLiquido, double valorTaxa) {
         double valorTotal = valorLiquido + valorTaxa;
         if (tipoOperacao == TipoOperacao.COMPRA) {
-            if(carteira.removerSaldo(valorTotal)) {
+            if(true) {
                 this.quantidadeMoeda += quantidadeMoeda;
                 novaTransacao.setStatus(Status.CONCLUIDA);
 

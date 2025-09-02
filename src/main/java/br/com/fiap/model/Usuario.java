@@ -1,7 +1,12 @@
 package br.com.fiap.model;
 
+import br.com.fiap.dao.CarteiraDAO;
+
+import java.sql.SQLException;
+
 public abstract class Usuario {
     //atributos da classe Usuario
+    public int id;
     public Carteira carteira;
     public String email;
     public String senha;
@@ -18,6 +23,7 @@ public abstract class Usuario {
 
     //construtor da classe Usuario
     public Usuario(
+            int id,
             String tipo,
             String email,
             String senha,
@@ -28,6 +34,7 @@ public abstract class Usuario {
             String rua,
             String numero
     ) {
+        this.id = id;
         this.carteira = new Carteira( this);
         this.tipo = tipo;
         this.email = email;
@@ -52,6 +59,7 @@ public abstract class Usuario {
     public String getBairro() {return bairro;}
     public String getRua() {return rua;}
     public String getNumero() {return numero;}
+    public int getId() {return id;}
 
     //setters
     public void setCarteira(Carteira carteira) {this.carteira = carteira;}
@@ -65,4 +73,5 @@ public abstract class Usuario {
     //metodo abstrato assinatura
     public abstract String getNome();
     public abstract double getTaxaTransacao();
+
 }

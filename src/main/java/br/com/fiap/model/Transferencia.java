@@ -22,9 +22,10 @@ public class Transferencia {
         this.hora = hora;
     }
 
-    public void validarTransferencia(Carteira carteiraDestinatario, double valorTransferencia) {
-        if (this.carteiraRemetente.removerSaldo(valorTransferencia)) {
-            this.carteiraDestinatario.adicionarSaldo(valorTransferencia);
+    public void validarTransferencia(Carteira carteiraRemetente, Carteira carteiraDestinatario, double valorTransferencia) {
+        if (carteiraRemetente.removerSaldoCarteira(valorTransferencia, carteiraRemetente)) {
+
+            carteiraDestinatario.adicionarSaldoCarteira(valorTransferencia,  carteiraDestinatario);
             this.status = Status.CONCLUIDA;
 
             System.out.printf("\n[Resumo] TRANSFERENCIA REALIZADA\n Id: %d\n Usuário: %s\n Destino: %s\n Valor: R$ %.2f\n Saldo restante: R$ %.2f\n",
