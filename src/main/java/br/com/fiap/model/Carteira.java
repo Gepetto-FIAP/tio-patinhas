@@ -188,7 +188,28 @@ public class Carteira {
         }
     }
 
+    public double getSaldoCarteira(int id) {
+        double saldo = 0.0;
+        try {
+            CarteiraDAO dao = new CarteiraDAO();
+            saldo = dao.getSaldo(id);
+            dao.fecharConexao();
+        } catch (SQLException e) {
+            System.out.println("[Erro] Não foi possível consultar saldo: " + e.getMessage());
+        }
+        return saldo;
+    }
+
+
     //getters
+    public Usuario getUsuario() {
+        return this.usuario;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
     public List<Transferencia> getTransferencias () {
         return this.transferencias;
     }

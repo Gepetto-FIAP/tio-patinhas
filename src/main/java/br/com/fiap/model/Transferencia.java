@@ -30,10 +30,10 @@ public class Transferencia {
 
             System.out.printf("\n[Resumo] TRANSFERENCIA REALIZADA\n Id: %d\n Usuário: %s\n Destino: %s\n Valor: R$ %.2f\n Saldo restante: R$ %.2f\n",
                     this.id,
-                    this.carteiraRemetente.getNomeUsuario(),
-                    this.carteiraDestinatario.getNomeUsuario(),
+                    carteiraRemetente.getNomeUsuario(),
+                    carteiraDestinatario.getNomeUsuario(),
                     valorTransferencia,
-                    this.carteiraRemetente.getSaldo()
+                    carteiraRemetente.getSaldoCarteira(carteiraRemetente.getId())
             );
         }
         else {

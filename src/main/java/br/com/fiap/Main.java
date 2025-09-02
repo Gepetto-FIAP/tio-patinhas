@@ -53,6 +53,7 @@ public class Main {
         System.out.println("7 - VENDER MOEDA");
         System.out.println("8 - CONSULTAR TRANSACAO");
         System.out.println("9 - CONSULTAR TRANSFERENCIA");
+        System.out.println("10 - TESTAR FUNCIONALIDADES DE MOEDA (DATABASE)");
     }
 
 
@@ -66,6 +67,66 @@ public class Main {
                     moeda.getCotacaoParaReal());
         }
     }
+
+    public static void testarFuncionalidadesMoeda() {
+        System.out.println("\n=== TESTANDO FUNCIONALIDADES DE MOEDA - DATABASE ===");
+
+        try {
+            MoedaDAO moedaDAO = new MoedaDAO();
+
+            System.out.println("\n1. TESTANDO INSERÇÃO DE MOEDA:");
+            Moeda novaMoeda = new Moeda("Litecoin", "LTC", 450.00);
+            moedaDAO.inserir(novaMoeda);
+
+            System.out.println("\n2. TESTANDO LISTAGEM DE TODAS AS MOEDAS:");
+            List<Moeda> todasMoedas = moedaDAO.listarTodas();
+            for (Moeda m : todasMoedas) {
+                System.out.printf("- %s (%s): R$ %.2f\n", m.getNome(), m.getSimbolo(), m.getCotacaoParaReal());
+            }
+
+            System.out.println("\n3. TESTANDO BUSCA POR SÍMBOLO:");
+            Moeda btcEncontrada = moedaDAO.buscarPorSimbolo("BTC");
+            if (btcEncontrada != null) {
+                System.out.printf("Bitcoin encontrado: %s - R$ %.2f\n",
+                        btcEncontrada.getSimbolo(), btcEncontrada.getCotacaoParaReal());
+            } else {
+                System.out.println("Bitcoin não encontrado no banco de dados");
+            }
+
+            System.out.println("\n4. TESTANDO ATUALIZAÇÃO DE COTAÇÃO:");
+            moedaDAO.atualizarCotacao("BTC", 550000.00);
+
+            System.out.println("\n5. TESTANDO BUSCA POR NOME:");
+            List<Moeda> moedasBitcoin = moedaDAO.buscarPorNome("Bitcoin");
+            for (Moeda m : moedasBitcoin) {
+                System.out.printf("Encontrado: %s (%s): R$ %.2f\n", m.getNome(), m.getSimbolo(), m.getCotacaoParaReal());
+            }
+
+            System.out.println("\n6. TESTANDO CONTAGEM DE MOEDAS:");
+            int totalMoedas = moedaDAO.contarMoedas();
+            System.out.println("Total de moedas cadastradas: " + totalMoedas);
+
+            System.out.println("\n7. TESTANDO VERIFICAÇÃO DE EXISTÊNCIA:");
+            boolean ethereumExiste = moedaDAO.existePorSimbolo("ETH");
+            System.out.println("Ethereum existe no banco? " + (ethereumExiste ? "Sim" : "Não"));
+
+            System.out.println("\n8. TESTANDO BUSCA POR ID:");
+            Moeda moedaPorId = moedaDAO.buscarPorId(1);
+            if (moedaPorId != null) {
+                System.out.printf("Moeda ID 1: %s (%s): R$ %.2f\n",
+                        moedaPorId.getNome(), moedaPorId.getSimbolo(), moedaPorId.getCotacaoParaReal());
+            } else {
+                System.out.println("Moeda com ID 1 não encontrada");
+            }
+
+            System.out.println("\n=== TESTE FINALIZADO ===");
+
+        } catch (Exception e) {
+            System.err.println("[ERRO] Falha ao testar funcionalidades de moeda: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -129,8 +190,6 @@ public class Main {
                         // Criar usuário
                         System.out.println("[*] Criando novo usuário...");
                         // implementar cadastro
-
-
                     }
                     case 5 -> {
                         if (usuarioSelecionado == null) {
@@ -229,6 +288,9 @@ public class Main {
                         System.out.println("[*] DIGITE O ID DA TRANSFERENCIA A SER CONSULTADA.");
                         int idTransferencia = scanner.nextInt();
                         usuarioSelecionado.getCarteira().consultarTransferencia(idTransferencia);
+                    }
+                    case 10 -> {
+                        testarFuncionalidadesMoeda();
                     }
                     case 0 -> {
                         running = false;
