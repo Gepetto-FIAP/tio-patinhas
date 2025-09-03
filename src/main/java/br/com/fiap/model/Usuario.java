@@ -50,16 +50,17 @@ public abstract class Usuario {
 
     //getters
     public Carteira getCarteira() {
-        return carteira;
+        return this.carteira;
     }
-    public String getEmail() {return email;}
-    public String getPais() {return pais;}
-    public String getEstado() {return estado;}
-    public String getCidade() {return cidade;}
-    public String getBairro() {return bairro;}
-    public String getRua() {return rua;}
-    public String getNumero() {return numero;}
-    public int getId() {return id;}
+    public String getEmail() {return this.email;}
+    public String getPais() {return this.pais;}
+    public String getEstado() {return this.estado;}
+    public String getCidade() {return this.cidade;}
+    public String getBairro() {return this.bairro;}
+    public String getRua() {return this.rua;}
+    public String getNumero() {return this.numero;}
+    public int getId() {return this.id;}
+    public String getSenha() {return this.senha;}
 
     //setters
     public void setCarteira(Carteira carteira) {this.carteira = carteira;}
@@ -69,6 +70,8 @@ public abstract class Usuario {
     public void setBairro(String bairro) {this.bairro = bairro;}
     public void setRua(String rua) {this.rua = rua;}
     public void setNumero(String numero) {this.numero = numero;}
+    public void setEmail(String email) {this.email = email;}
+    public void setSenha(String senha) {this.senha = senha;}
 
     //metodo abstrato assinatura
     public abstract String getNome();

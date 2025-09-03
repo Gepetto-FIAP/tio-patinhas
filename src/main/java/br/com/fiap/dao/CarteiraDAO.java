@@ -74,7 +74,8 @@ public class CarteiraDAO {
     }
 
     public void inserir(Carteira carteira) throws SQLException {
-        String sql = "INSERT INTO T_CARTEIRA (saldo_em_real, id_usuario) VALUES (?, ?)";
+        String sql = "INSERT INTO T_CARTEIRA (id_carteira, saldo_em_real, id_usuario) " +
+                "VALUES (SEQ_CARTEIRA.NEXTVAL, ?, ?)";
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             

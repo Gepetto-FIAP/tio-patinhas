@@ -28,6 +28,7 @@ public class UsuarioDAO {
                 String pais = rs.getString("pais");
                 String estado = rs.getString("estado");
                 String cidade = rs.getString("cidade");
+                String bairro = rs.getString("bairro");
                 String rua = rs.getString("rua");
                 String numero = rs.getString("numero_imovel");
 
@@ -40,7 +41,7 @@ public class UsuarioDAO {
                             if (rsPf.next()) {
                                 usuario = new PessoaFisica(
                                         id,
-                                        tipo, email, senha, pais, estado, cidade, "", rua, numero,
+                                        tipo, email, senha, pais, estado, cidade, bairro, rua, numero,
                                         rsPf.getString("cpf"),
                                         rsPf.getString("genero"),
                                         rsPf.getInt("idade"),
@@ -58,7 +59,7 @@ public class UsuarioDAO {
                             if (rsPj.next()) {
                                 usuario = new PessoaJuridica(
                                         id,
-                                        tipo, email, senha, pais, estado, cidade, "", rua, numero,
+                                        tipo, email, senha, pais, estado, cidade, bairro, rua, numero,
                                         rsPj.getString("cnpj"),
                                         rsPj.getString("ramo"),
                                         rsPj.getString("nome_fantasia")
@@ -100,6 +101,7 @@ public class UsuarioDAO {
                     String pais = rs.getString("pais");
                     String estado = rs.getString("estado");
                     String cidade = rs.getString("cidade");
+                    String bairro = rs.getString("bairro");
                     String rua = rs.getString("rua");
                     String numero = rs.getString("numero_imovel");
 
@@ -111,7 +113,7 @@ public class UsuarioDAO {
                                 if (rsPf.next()) {
                                     usuario = new PessoaFisica(
                                             idUsuario,
-                                            tipo, email, senha, pais, estado, cidade, "", rua, numero,
+                                            tipo, email, senha, pais, estado, cidade, bairro, rua, numero,
                                             rsPf.getString("cpf"),
                                             rsPf.getString("genero"),
                                             rsPf.getInt("idade"),
@@ -129,7 +131,7 @@ public class UsuarioDAO {
                                 if (rsPj.next()) {
                                     usuario = new PessoaJuridica(
                                             idUsuario,
-                                            tipo, email, senha, pais, estado, cidade, "", rua, numero,
+                                            tipo, email, senha, pais, estado, cidade, bairro, rua, numero,
                                             rsPj.getString("cnpj"),
                                             rsPj.getString("ramo"),
                                             rsPj.getString("nome_fantasia")
@@ -153,60 +155,70 @@ public class UsuarioDAO {
     }
 
     public int inserir(Usuario usuario) throws SQLException {
-        String sqlUsuario = "INSERT INTO T_USUARIO (tipo, email, senha, pais, estado, cidade, rua, numero_imovel) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS)) {
-            
-            stmt.setString(1, usuario.tipo);
-            stmt.setString(2, usuario.email);
-            stmt.setString(3, usuario.senha);
-            stmt.setString(4, usuario.pais);
-            stmt.setString(5, usuario.estado);
-            stmt.setString(6, usuario.cidade);
-            stmt.setString(7, usuario.rua);
-            stmt.setString(8, usuario.numero);
-            
-            int rowsInserted = stmt.executeUpdate();
-            
-            if (rowsInserted > 0) {
-                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        int userId = generatedKeys.getInt(1);
-                        usuario.id = userId;
-                        
-                        if (usuario instanceof PessoaFisica) {
-                            inserirPessoaFisica((PessoaFisica) usuario);
-                        } else if (usuario instanceof PessoaJuridica) {
-                            inserirPessoaJuridica((PessoaJuridica) usuario);
+        int userId = -1;
+
+        try (Connection conn = ConnectionFactory.getConnection()) {
+
+            // 🔹 Inserir usuário sem passar ID diretamente
+            String sqlUsuario = "INSERT INTO T_USUARIO " +
+                    "(id_usuario, tipo, email, senha, pais, estado, cidade, bairro, rua, numero_imovel) " +
+                    "VALUES (SEQ_USUARIO.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            try (PreparedStatement stmt = conn.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, usuario.tipo);
+                stmt.setString(2, usuario.email);
+                stmt.setString(3, usuario.senha);
+                stmt.setString(4, usuario.pais);
+                stmt.setString(5, usuario.estado);
+                stmt.setString(6, usuario.cidade);
+                stmt.setString(7, usuario.bairro);
+                stmt.setString(8, usuario.rua);
+                stmt.setString(9, usuario.numero);
+
+                int rowsInserted = stmt.executeUpdate();
+
+                if (rowsInserted > 0) {
+                    // 🔹 Recuperar o ID gerado pela sequence
+                    try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            userId = generatedKeys.getInt(1);
+                            usuario.id = userId;
                         }
-                        
-                        CarteiraDAO carteiraDAO = new CarteiraDAO();
-                        Carteira carteira = new Carteira(usuario);
-                        carteiraDAO.inserir(carteira);
-                        usuario.setCarteira(carteira);
-                        
-                        return userId;
                     }
+
+                    // 🔹 Inserir dados específicos PF/PJ
+                    if (usuario instanceof PessoaFisica pf) {
+                        inserirPessoaFisica(pf);
+                    } else if (usuario instanceof PessoaJuridica pj) {
+                        inserirPessoaJuridica(pj);
+                    }
+
+                    // 🔹 Criar carteira
+                    CarteiraDAO carteiraDAO = new CarteiraDAO();
+                    Carteira carteira = new Carteira(usuario);
+                    usuario.setCarteira(carteira);
+                    carteiraDAO.inserir(carteira);
                 }
             }
         }
-        return -1;
+
+        return userId;
     }
-    
+
+
     private void inserirPessoaFisica(PessoaFisica pf) throws SQLException {
         String sqlPf = "INSERT INTO T_PF (id_usuario, cpf, genero, idade, nome, sobrenome) VALUES (?, ?, ?, ?, ?, ?)";
-        
+
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sqlPf)) {
-            
+
             stmt.setInt(1, pf.getId());
             stmt.setString(2, pf.getCpf());
             stmt.setString(3, pf.getGenero());
             stmt.setInt(4, pf.getIdade());
             stmt.setString(5, pf.getNome());
             stmt.setString(6, pf.getSobrenome());
-            
+
             stmt.executeUpdate();
         }
     }

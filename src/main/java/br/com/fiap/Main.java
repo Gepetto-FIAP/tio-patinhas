@@ -174,6 +174,7 @@ public class Main {
                 switch (opcao) {
                     case 1 -> {
                         // Selecionar usuário
+                        System.out.println("[*] Buscando usuários...");
                         exibirUsuarios();
                         System.out.print("[*] Digite o ID do usuário: ");
                         int id = scanner.nextInt();
@@ -189,7 +190,145 @@ public class Main {
                     case 2 -> {
                         // Criar usuário
                         System.out.println("[*] Criando novo usuário...");
-                        // implementar cadastro
+
+                        System.out.println("Digite o tipo de usuário (1 - Pessoa Física | 2 - Pessoa Jurídica): ");
+                        int tipo = scanner.nextInt();
+                        scanner.nextLine(); // limpar buffer
+
+                        System.out.println("Digite o email: ");
+                        String email = scanner.nextLine();
+
+                        System.out.println("Digite a senha: ");
+                        String senha = scanner.nextLine();
+
+                        System.out.println("Digite o país: ");
+                        String pais = scanner.nextLine();
+
+                        System.out.println("Digite o estado: ");
+                        String estado = scanner.nextLine();
+
+                        System.out.println("Digite a cidade: ");
+                        String cidade = scanner.nextLine();
+
+                        System.out.println("Digite o bairro: ");
+                        String bairro = scanner.nextLine();
+
+                        System.out.println("Digite a rua: ");
+                        String rua = scanner.nextLine();
+
+                        System.out.println("Digite o número: ");
+                        String numero = scanner.nextLine();
+
+                        Usuario novoUsuario = null;
+
+                        if (tipo == 1) {
+                            // Pessoa Física
+                            System.out.println("Digite o CPF: ");
+                            String cpf = scanner.nextLine();
+
+                            System.out.println("Digite o genero: ");
+                            String genero = scanner.nextLine();
+
+                            System.out.println("Digite a idade: ");
+                            int idade = scanner.nextInt();
+                            scanner.nextLine(); // consome o \n pendente
+
+                            System.out.println("Digite o nome: ");
+                            String nome = scanner.nextLine();
+
+                            System.out.println("Digite o sobrenome: ");
+                            String sobrenome = scanner.nextLine();
+
+                            novoUsuario = new PessoaFisica(
+                                    0,
+                                    "PF", email, senha, pais, estado, cidade, bairro, rua, numero, cpf, genero, idade, nome, sobrenome
+                            );
+
+                        } else if (tipo == 2) {
+                            // Pessoa Jurídica
+                            System.out.println("Digite o CNPJ: ");
+                            String cnpj = scanner.nextLine();
+
+                            System.out.println("Digite o ramo: ");
+                            String ramo = scanner.nextLine();
+
+                            System.out.println("Digite a razão social: ");
+                            String razaoSocial = scanner.nextLine();
+
+                            novoUsuario = new PessoaJuridica(
+                                    1,"PJ", email, senha, pais, estado, cidade, bairro, rua, numero, cnpj, ramo, razaoSocial
+                            );
+                        }
+                        if (novoUsuario != null) {
+                            try {
+
+                                UsuarioDAO dao = new UsuarioDAO();
+                                int id = dao.inserir(novoUsuario);
+
+                                CarteiraDAO carteiraDAO = new CarteiraDAO();
+                                Carteira carteira = carteiraDAO.buscarPorId(id);
+                                novoUsuario.setCarteira(carteira);
+
+                                System.out.println("[✔] Usuário criado com sucesso!");
+                            } catch (Exception e) {
+                                System.out.println("[x] Erro ao inserir usuário: " + e.getMessage());
+                            }
+                        } else {
+                            System.out.println("[x] Tipo de usuário inválido!");
+                        }
+                    }
+                    case 3 -> {
+                        // Editar usuário
+                        System.out.println("[*] Buscando usuários...");
+                        exibirUsuarios(); // Mostra todos os usuários cadastrados
+                        System.out.println("[*] Digite o id do usuário a ser editado: ");
+                        int id = scanner.nextInt();
+                        scanner.nextLine(); // consumir quebra de linha
+
+                        Usuario usuarioExistente = usuarioDAO.buscarPorId(id);
+
+                        if (usuarioExistente == null) {
+                            System.out.println("[!] Usuário não encontrado!");
+                        } else {
+                            System.out.println("[*] Editando dados do usuário ID " + id);
+
+                            System.out.print("Novo email (atual: " + usuarioExistente.getEmail() + "): ");
+                            String email = scanner.nextLine();
+                            if (!email.isEmpty()) usuarioExistente.setEmail(email);
+
+                            System.out.print("Nova senha (atual: " + usuarioExistente.getSenha() + "): ");
+                            String senha = scanner.nextLine();
+                            if (!senha.isEmpty()) usuarioExistente.setSenha(senha);
+
+                            System.out.print("Novo país (atual: " + usuarioExistente.getPais() + "): ");
+                            String pais = scanner.nextLine();
+                            if (!pais.isEmpty()) usuarioExistente.setPais(pais);
+
+                            System.out.print("Novo estado (atual: " + usuarioExistente.getEstado() + "): ");
+                            String estado = scanner.nextLine();
+                            if (!estado.isEmpty()) usuarioExistente.setEstado(estado);
+
+                            System.out.print("Nova cidade (atual: " + usuarioExistente.getCidade() + "): ");
+                            String cidade = scanner.nextLine();
+                            if (!cidade.isEmpty()) usuarioExistente.setCidade(cidade);
+
+                            System.out.print("Novo bairro (atual: " + usuarioExistente.getBairro() + "): ");
+                            String bairro = scanner.nextLine();
+                            if (!bairro.isEmpty()) usuarioExistente.setBairro(bairro);
+
+                            System.out.print("Nova rua (atual: " + usuarioExistente.getRua() + "): ");
+                            String rua = scanner.nextLine();
+                            if (!rua.isEmpty()) usuarioExistente.setRua(rua);
+
+                            System.out.print("Novo número (atual: " + usuarioExistente.getNumero() + "): ");
+                            String numero = scanner.nextLine();
+                            if (!numero.isEmpty()) usuarioExistente.setNumero(numero);
+
+                            // Atualizar no banco
+                            usuarioDAO.atualizar(usuarioExistente);
+                            System.out.println("[✔] Usuário atualizado com sucesso!");
+                        }
+
                     }
                     case 5 -> {
                         if (usuarioSelecionado == null) {
