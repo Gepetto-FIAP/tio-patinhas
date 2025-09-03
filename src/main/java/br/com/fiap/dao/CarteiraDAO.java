@@ -74,24 +74,31 @@ public class CarteiraDAO {
     }
 
     public void inserir(Carteira carteira) throws SQLException {
-        String sql = "INSERT INTO T_CARTEIRA (id_carteira, saldo_em_real, id_usuario) " +
-                "VALUES (SEQ_CARTEIRA.NEXTVAL, ?, ?)";
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            
-            stmt.setDouble(1, carteira.getSaldo());
-            stmt.setInt(2, carteira.getUsuario().getId());
-            
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        carteira.setIdCarteira(generatedKeys.getInt(1));
-                    }
+        try (Connection conn = ConnectionFactory.getConnection()) {
+            // 1. Pega o próximo valor da sequence
+            int idCarteira = 0;
+            String seqSql = "SELECT SEQ_CARTEIRA.NEXTVAL FROM dual";
+            try (PreparedStatement stmtSeq = conn.prepareStatement(seqSql);
+                 ResultSet rs = stmtSeq.executeQuery()) {
+                if (rs.next()) {
+                    idCarteira = rs.getInt(1);
                 }
             }
+
+            // 2. Insere a carteira já usando o id gerado
+            String sql = "INSERT INTO T_CARTEIRA (id_carteira, saldo_em_real, id_usuario) VALUES (?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, idCarteira);
+                stmt.setDouble(2, carteira.getSaldo());
+                stmt.setInt(3, carteira.getUsuario().getId());
+                stmt.executeUpdate();
+            }
+
+            // 3. Atualiza o objeto em memória
+            carteira.setIdCarteira(idCarteira);
         }
     }
+
 
     public boolean deletar(int idUsuario) throws SQLException {
         String sql = "DELETE FROM T_CARTEIRA WHERE id_usuario = ?";

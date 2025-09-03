@@ -258,16 +258,13 @@ public class Main {
                             novoUsuario = new PessoaJuridica(
                                     1,"PJ", email, senha, pais, estado, cidade, bairro, rua, numero, cnpj, ramo, razaoSocial
                             );
+
                         }
                         if (novoUsuario != null) {
                             try {
 
                                 UsuarioDAO dao = new UsuarioDAO();
                                 int id = dao.inserir(novoUsuario);
-
-                                CarteiraDAO carteiraDAO = new CarteiraDAO();
-                                Carteira carteira = carteiraDAO.buscarPorId(id);
-                                novoUsuario.setCarteira(carteira);
 
                                 System.out.println("[✔] Usuário criado com sucesso!");
                             } catch (Exception e) {
@@ -327,6 +324,22 @@ public class Main {
                             // Atualizar no banco
                             usuarioDAO.atualizar(usuarioExistente);
                             System.out.println("[✔] Usuário atualizado com sucesso!");
+                        }
+                    }
+                    case 4 -> {
+                        //Remover usuario
+                        System.out.println("[*] Buscando usuários...");
+                        exibirUsuarios();
+                        System.out.println("[*] Digite o id do usuário a ser removido: ");
+                        int id = scanner.nextInt();
+
+                        try {
+                            UsuarioDAO dao = new UsuarioDAO();
+                            dao.deletar(id);
+
+                            System.out.println("[✔] Usuário removido com sucesso!");
+                        } catch (Exception e) {
+                            System.out.println("[x] Erro ao remover usuário: " + e.getMessage());
                         }
 
                     }

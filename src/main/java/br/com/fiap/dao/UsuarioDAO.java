@@ -155,54 +155,50 @@ public class UsuarioDAO {
     }
 
     public int inserir(Usuario usuario) throws SQLException {
-        int userId = -1;
 
         try (Connection conn = ConnectionFactory.getConnection()) {
 
-            // 🔹 Inserir usuário sem passar ID diretamente
-            String sqlUsuario = "INSERT INTO T_USUARIO " +
-                    "(id_usuario, tipo, email, senha, pais, estado, cidade, bairro, rua, numero_imovel) " +
-                    "VALUES (SEQ_USUARIO.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            try (PreparedStatement stmt = conn.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS)) {
-                stmt.setString(1, usuario.tipo);
-                stmt.setString(2, usuario.email);
-                stmt.setString(3, usuario.senha);
-                stmt.setString(4, usuario.pais);
-                stmt.setString(5, usuario.estado);
-                stmt.setString(6, usuario.cidade);
-                stmt.setString(7, usuario.bairro);
-                stmt.setString(8, usuario.rua);
-                stmt.setString(9, usuario.numero);
-
-                int rowsInserted = stmt.executeUpdate();
-
-                if (rowsInserted > 0) {
-                    // 🔹 Recuperar o ID gerado pela sequence
-                    try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                        if (generatedKeys.next()) {
-                            userId = generatedKeys.getInt(1);
-                            usuario.id = userId;
-                        }
-                    }
-
-                    // 🔹 Inserir dados específicos PF/PJ
-                    if (usuario instanceof PessoaFisica pf) {
-                        inserirPessoaFisica(pf);
-                    } else if (usuario instanceof PessoaJuridica pj) {
-                        inserirPessoaJuridica(pj);
-                    }
-
-                    // 🔹 Criar carteira
-                    CarteiraDAO carteiraDAO = new CarteiraDAO();
-                    Carteira carteira = new Carteira(usuario);
-                    usuario.setCarteira(carteira);
-                    carteiraDAO.inserir(carteira);
+            int userId = 0;
+            String seqSql = "SELECT SEQ_USUARIO.NEXTVAL FROM dual";
+            try (PreparedStatement stmtSeq = conn.prepareStatement(seqSql);
+                 ResultSet rs = stmtSeq.executeQuery()) {
+                if (rs.next()) {
+                    userId = rs.getInt(1);
                 }
             }
-        }
 
-        return userId;
+            // 🔹 2. Faz o insert usando o valor da sequence
+            String sql = "INSERT INTO T_USUARIO (id_usuario, tipo, email, senha, pais, estado, cidade, bairro, rua, numero_imovel) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, userId);
+                stmt.setString(2, usuario.tipo);
+                stmt.setString(3, usuario.email);
+                stmt.setString(4, usuario.senha);
+                stmt.setString(5, usuario.pais);
+                stmt.setString(6, usuario.estado);
+                stmt.setString(7, usuario.cidade);
+                stmt.setString(8, usuario.bairro);
+                stmt.setString(9, usuario.rua);
+                stmt.setString(10, usuario.numero);
+                stmt.executeUpdate();
+            }
+
+            usuario.setId(userId);
+
+
+            if (usuario instanceof PessoaFisica pf) {
+                inserirPessoaFisica(pf);
+            } else if (usuario instanceof PessoaJuridica pj) {
+                inserirPessoaJuridica(pj);
+            }
+
+            CarteiraDAO carteiraDAO = new CarteiraDAO();
+            Carteira carteira = new Carteira(usuario);
+            carteiraDAO.inserir(carteira);
+
+        }
+        return 0;
     }
 
 
