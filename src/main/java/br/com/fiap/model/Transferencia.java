@@ -29,8 +29,7 @@ public class Transferencia {
             this.status = Status.CONCLUIDA;
 
 
-            System.out.printf("\n[Resumo] TRANSFERENCIA REALIZADA\n Id: %d\n Usuário: %s\n Destino: %s\n Valor: R$ %.2f\n Saldo restante: R$ %.2f\n",
-                    this.id,
+            System.out.printf("\n[Resumo] TRANSFERENCIA REALIZADA\n Usuário: %s\n Destino: %s\n Valor: R$ %.2f\n Saldo restante: R$ %.2f\n",
                     carteiraRemetente.getNomeUsuario(),
                     carteiraDestinatario.getNomeUsuario(),
                     valorTransferencia,
@@ -39,8 +38,7 @@ public class Transferencia {
         }
         else {
             this.status = Status.ERRO;
-            System.out.printf("\n[Resumo] TRANSFERENCIA NÃO REALIZADA\n Id: %d\n Motivo: saldo insuficiente\n Usuário: %s\n Destino: %s\n Valor: R$ %.2f\n Saldo restante: R$ %.2f\n",
-                    this.id,
+            System.out.printf("\n[Resumo] TRANSFERENCIA NÃO REALIZADA\n Motivo: saldo insuficiente\n Usuário: %s\n Destino: %s\n Valor: R$ %.2f\n Saldo restante: R$ %.2f\n",
                     carteiraRemetente.getNomeUsuario(),
                     carteiraDestinatario.getNomeUsuario(),
                     valorTransferencia,
