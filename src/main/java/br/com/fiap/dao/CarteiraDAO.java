@@ -14,9 +14,24 @@ public class CarteiraDAO {
     }
 
     public Carteira buscarPorId(int id) throws SQLException {
-        String sql = "SELECT id_carteira, saldo_em_real, id_usuario FROM T_CARTEIRA WHERE id_usuario = ?";
+        String sql = "SELECT id_carteira, saldo_em_real, id_usuario FROM T_CARTEIRA WHERE id_carteira = ?";
         try (PreparedStatement ps = conexao.prepareStatement(sql)) {
             ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Carteira c = new Carteira();
+                c.setIdCarteira(rs.getInt("id_carteira"));
+                c.setSaldoCarteira(rs.getDouble("saldo_em_real"));
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public Carteira buscarPorUsuario(int id_usuario) throws SQLException {
+        String sql = "SELECT id_carteira, saldo_em_real, id_usuario FROM T_CARTEIRA WHERE id_usuario = ?";
+        try (PreparedStatement ps = conexao.prepareStatement(sql)) {
+            ps.setInt(1, id_usuario);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 Carteira c = new Carteira();
@@ -56,7 +71,7 @@ public class CarteiraDAO {
     }
 
     public double getSaldo(int idUsuario) throws SQLException {
-        String sql = "SELECT saldo_em_real FROM T_CARTEIRA WHERE id_usuario = ?";
+        String sql = "SELECT saldo_em_real FROM T_CARTEIRA WHERE id_carteira = ?";
         double saldo = 0.0;
 
         try (Connection conn = ConnectionFactory.getConnection();

@@ -71,7 +71,7 @@ public class UsuarioDAO {
 
                 if (usuario != null) {
                     CarteiraDAO carteiraDAO = new CarteiraDAO();
-                    Carteira carteira = carteiraDAO.buscarPorId(id);
+                    Carteira carteira = carteiraDAO.buscarPorUsuario(id);
                     usuario.setCarteira(carteira);
                     usuarios.add(usuario);
                 }
@@ -144,7 +144,7 @@ public class UsuarioDAO {
                     // Carregar a carteira se o usuário foi encontrado
                     if (usuario != null) {
                         CarteiraDAO carteiraDAO = new CarteiraDAO();
-                        Carteira carteira = carteiraDAO.buscarPorId(idUsuario);
+                        Carteira carteira = carteiraDAO.buscarPorUsuario(idUsuario);
                         usuario.setCarteira(carteira);
                         carteira.setUsuario(usuario);
                     }

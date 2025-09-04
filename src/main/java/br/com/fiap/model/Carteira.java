@@ -178,10 +178,8 @@ public class Carteira {
     public void adicionarSaldoCarteira(double valor, Carteira carteira) {
         try {
             CarteiraDAO dao = new CarteiraDAO();
-
             dao.depositar(carteira.id, valor);
             dao.fecharConexao();
-
             System.out.printf("[Log] R$ %.2f foi adicionado na conta de %s \n", valor, carteira.usuario.getNome());
         } catch (SQLException e) {
             System.out.println("[Erro] Não foi possível adicionar saldo: " + e.getMessage());

@@ -28,6 +28,7 @@ public class Transferencia {
             carteiraDestinatario.adicionarSaldoCarteira(valorTransferencia,  carteiraDestinatario);
             this.status = Status.CONCLUIDA;
 
+
             System.out.printf("\n[Resumo] TRANSFERENCIA REALIZADA\n Id: %d\n Usuário: %s\n Destino: %s\n Valor: R$ %.2f\n Saldo restante: R$ %.2f\n",
                     this.id,
                     carteiraRemetente.getNomeUsuario(),
@@ -40,10 +41,11 @@ public class Transferencia {
             this.status = Status.ERRO;
             System.out.printf("\n[Resumo] TRANSFERENCIA NÃO REALIZADA\n Id: %d\n Motivo: saldo insuficiente\n Usuário: %s\n Destino: %s\n Valor: R$ %.2f\n Saldo restante: R$ %.2f\n",
                     this.id,
-                    this.carteiraRemetente.getNomeUsuario(),
-                    this.carteiraDestinatario.getNomeUsuario(),
+                    carteiraRemetente.getNomeUsuario(),
+                    carteiraDestinatario.getNomeUsuario(),
                     valorTransferencia,
-                    this.carteiraRemetente.getSaldo()
+                    carteiraRemetente.getSaldoCarteira(carteiraRemetente.getId())
+
             );
         }
     }
