@@ -138,4 +138,23 @@ CREATE INDEX IDX_TRANSFERENCIA_DESTINATARIO ON T_TRANSFERENCIA(id_carteira_desti
 CREATE INDEX IDX_TRANSFERENCIA_DATA ON T_TRANSFERENCIA(data_transferencia);
 CREATE INDEX IDX_PREFERENCIAS_USUARIO ON T_PREFERENCIAS(id_usuario);
 
+-- ALTER TABLE examples for demonstration (optional modifications)
+-- These demonstrate ALTER capabilities, can be uncommented if needed
+
+-- Add a new column to track last update time
+-- ALTER TABLE T_MOEDA ADD data_atualizacao TIMESTAMP DEFAULT SYSTIMESTAMP;
+
+-- Modify column size if needed
+-- ALTER TABLE T_USUARIO MODIFY email VARCHAR2(320);
+
+-- Add a new constraint
+-- ALTER TABLE T_CARTEIRA ADD CONSTRAINT CK_SALDO_MAXIMO CHECK (saldo_em_real <= 99999999999999.99);
+
+-- Drop and recreate a constraint
+-- ALTER TABLE T_TRANSFERENCIA DROP CONSTRAINT CK_TRANSFERENCIA_DIFERENTES;
+-- ALTER TABLE T_TRANSFERENCIA ADD CONSTRAINT CK_TRANSFERENCIA_DIFERENTES CHECK (id_carteira_remetente != id_carteira_destinatario);
+
+-- Rename a column (if needed)
+-- ALTER TABLE T_PREFERENCIAS RENAME COLUMN receber_notificacoes TO notificacoes_ativas;
+
 COMMIT;
