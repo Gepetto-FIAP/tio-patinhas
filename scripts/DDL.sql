@@ -107,11 +107,9 @@ CREATE TABLE T_TRANSFERENCIA (
     id_carteira_destinatario NUMBER NOT NULL,
     valor_transferencia NUMBER(15,2) NOT NULL CHECK (valor_transferencia > 0),
     status_transferencia VARCHAR2(20) DEFAULT 'PENDENTE' NOT NULL CHECK (status_transferencia IN ('ERRO', 'PENDENTE', 'CONCLUIDA')),
-    data_transferencia DATE DEFAULT SYSDATE,
-    hora_transferencia TIMESTAMP DEFAULT SYSTIMESTAMP,
+    timestamp_transferencia TIMESTAMP DEFAULT SYSTIMESTAMP,
     CONSTRAINT FK_TRANSFERENCIA_REMETENTE FOREIGN KEY (id_carteira_remetente) REFERENCES T_CARTEIRA(id_carteira) ON DELETE CASCADE,
     CONSTRAINT FK_TRANSFERENCIA_DESTINATARIO FOREIGN KEY (id_carteira_destinatario) REFERENCES T_CARTEIRA(id_carteira) ON DELETE CASCADE,
-    CONSTRAINT CK_TRANSFERENCIA_DIFERENTES CHECK (id_carteira_remetente != id_carteira_destinatario)
 );
 
 CREATE TABLE T_PREFERENCIAS (

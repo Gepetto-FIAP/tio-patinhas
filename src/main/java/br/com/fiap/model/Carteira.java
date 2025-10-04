@@ -4,6 +4,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 import br.com.fiap.dao.CarteiraDAO;
+import br.com.fiap.dao.TransferenciaDAO;
+
+import java.time.LocalDateTime;
 
 public class Carteira {
     private int id;
@@ -93,15 +96,14 @@ public class Carteira {
                 valorTaxa,
                 quantidadeMoeda,
                 Status.PENDENTE,
-                "",
-                ""
+                "", ""
         );
 
         investimento.getTransacoes().add(novaTransacao);
         investimento.validarTransacao(quantidadeMoeda, TipoOperacao.VENDA, novaTransacao, valorLiquido, valorTaxa);
     }
 
-    public void transferirSaldo(Usuario usuarioRemetente, Usuario usuarioDestinatario, double valorTransferencia) {
+    public void transferirSaldo(Usuario usuarioRemetente, Usuario usuarioDestinatario, double valorTransferencia) throws SQLException {
         System.out.printf("\n[Log] %s está realizando transferencia de saldo...\n", usuarioRemetente.getNome());
 
         Transferencia novaTransferencia = new Transferencia(
@@ -109,17 +111,23 @@ public class Carteira {
                 usuarioDestinatario.getCarteira(),
                 valorTransferencia,
                 Status.PENDENTE,
-                "",
-                ""
+                LocalDateTime.now()
+        );
+
+        novaTransferencia.validarTransferencia(
+            usuarioRemetente.getCarteira(),
+            usuarioDestinatario.getCarteira(),
+            valorTransferencia
         );
 
         usuarioRemetente.getCarteira().getTransferencias().add(novaTransferencia);
         usuarioDestinatario.getCarteira().getTransferencias().add(novaTransferencia);
-        novaTransferencia.validarTransferencia(usuarioRemetente.getCarteira(), usuarioDestinatario.getCarteira(), valorTransferencia);
     }
 
     public void consultarTransacao (int id) {
         System.out.printf("\n[Log] %s está realizando consulta transacao...\n", this.usuario.getNome());
+
+
         for (Investimento investimento : this.investimentos) {
             for (Transacao transacao : investimento.getTransacoes()) {
                 if (transacao.getId() == id) {
@@ -128,19 +136,28 @@ public class Carteira {
                 }
             }
         }
+
         System.out.printf("[Log] Não há transação com o id %d para %s.\n", id, this.getNomeUsuario());
     }
 
-    public void consultarTransferencia (int id) {
-        System.out.printf("\n[Log] %s está realizando consulta transferencia...\n", this.usuario.getNome());
-        for (Transferencia transferencia : this.transferencias) {
-            if (transferencia.getId() == id) {
-                transferencia.exibir();
-                return;
-            }
+
+    public void consultarTransferencia(int idTransferencia) throws SQLException  {
+        System.out.printf("\n[Log] %s está realizando consulta transferencias...\n", this.getNomeUsuario());
+
+        TransferenciaDAO dao = new TransferenciaDAO();
+        Transferencia transferencia = dao.consultar(idTransferencia, this.id);
+
+        if (transferencia != null) {
+            transferencia.exibir();
         }
-        System.out.printf("[Log] Não há transferência com o id %d para %s.\n", id, this.getNomeUsuario());
+        else {
+            System.out.printf("[Log] Não há transferência com o id %d para %s.\n", idTransferencia, this.getNomeUsuario());
+        }
     }
+
+
+
+
 
     private Investimento consultarInvestimentos (Moeda moeda) {
         for (Investimento investimento : this.investimentos) {

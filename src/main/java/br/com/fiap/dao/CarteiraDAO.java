@@ -14,6 +14,7 @@ public class CarteiraDAO {
     }
 
     public Carteira buscarPorId(int id) throws SQLException {
+        UsuarioDAO dao = new UsuarioDAO();
         String sql = "SELECT id_carteira, saldo_em_real, id_usuario FROM T_CARTEIRA WHERE id_carteira = ?";
         try (PreparedStatement ps = conexao.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -22,6 +23,7 @@ public class CarteiraDAO {
                 Carteira c = new Carteira();
                 c.setIdCarteira(rs.getInt("id_carteira"));
                 c.setSaldoCarteira(rs.getDouble("saldo_em_real"));
+                c.setUsuario(dao.buscarPorId(rs.getInt("id_usuario")));
                 return c;
             }
         }
@@ -74,8 +76,7 @@ public class CarteiraDAO {
         String sql = "SELECT saldo_em_real FROM T_CARTEIRA WHERE id_carteira = ?";
         double saldo = 0.0;
 
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
 
             stmt.setInt(1, idUsuario);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -89,36 +90,36 @@ public class CarteiraDAO {
     }
 
     public void inserir(Carteira carteira) throws SQLException {
-        try (Connection conn = ConnectionFactory.getConnection()) {
-            // 1. Pega o próximo valor da sequence
-            int idCarteira = 0;
-            String seqSql = "SELECT SEQ_CARTEIRA.NEXTVAL FROM dual";
-            try (PreparedStatement stmtSeq = conn.prepareStatement(seqSql);
-                 ResultSet rs = stmtSeq.executeQuery()) {
-                if (rs.next()) {
-                    idCarteira = rs.getInt(1);
-                }
-            }
 
-            // 2. Insere a carteira já usando o id gerado
-            String sql = "INSERT INTO T_CARTEIRA (id_carteira, saldo_em_real, id_usuario) VALUES (?, ?, ?)";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, idCarteira);
-                stmt.setDouble(2, carteira.getSaldo());
-                stmt.setInt(3, carteira.getUsuario().getId());
-                stmt.executeUpdate();
+        // 1. Pega o próximo valor da sequence
+        int idCarteira = 0;
+        String seqSql = "SELECT SEQ_CARTEIRA.NEXTVAL FROM dual";
+        try (PreparedStatement stmtSeq = conexao.prepareStatement(seqSql);
+             ResultSet rs = stmtSeq.executeQuery()) {
+            if (rs.next()) {
+                idCarteira = rs.getInt(1);
             }
-
-            // 3. Atualiza o objeto em memória
-            carteira.setIdCarteira(idCarteira);
         }
+
+        // 2. Insere a carteira já usando o id gerado
+        String sql = "INSERT INTO T_CARTEIRA (id_carteira, saldo_em_real, id_usuario) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setInt(1, idCarteira);
+            stmt.setDouble(2, carteira.getSaldo());
+            stmt.setInt(3, carteira.getUsuario().getId());
+            stmt.executeUpdate();
+        }
+
+        // 3. Atualiza o objeto em memória
+        carteira.setIdCarteira(idCarteira);
+
     }
 
 
     public boolean deletar(int idUsuario) throws SQLException {
         String sql = "DELETE FROM T_CARTEIRA WHERE id_usuario = ?";
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             
             stmt.setInt(1, idUsuario);
             return stmt.executeUpdate() > 0;

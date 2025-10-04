@@ -118,17 +118,18 @@ INSERT INTO T_TRANSACAO (id_transacao, id_carteira, id_investimento, id_moeda, t
 VALUES (SEQ_TRANSACAO.NEXTVAL, 4, 6, 4, 'VENDA', 12000.00, 11880.00, 120.00, 1000.0, 'CONCLUIDA');
 
 -- Insert some sample Transferencias
-INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia) 
-VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 1, 2, 1000.00, 'CONCLUIDA');
+-- Insert some sample Transferencias ajustado
+INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia, timestamp_transferencia)
+VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 1, 2, 1000.00, 'CONCLUIDA', SYSTIMESTAMP);
 
-INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia) 
-VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 3, 1, 5000.00, 'CONCLUIDA');
+INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia, timestamp_transferencia)
+VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 3, 1, 5000.00, 'CONCLUIDA', SYSTIMESTAMP);
 
-INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia) 
-VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 2, 4, 2500.00, 'PENDENTE');
+INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia, timestamp_transferencia)
+VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 2, 4, 2500.00, 'PENDENTE', SYSTIMESTAMP);
 
-INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia) 
-VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 5, 3, 10000.00, 'CONCLUIDA');
+INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia, timestamp_transferencia)
+VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 5, 3, 10000.00, 'CONCLUIDA', SYSTIMESTAMP);
 
 -- Sample UPDATE statements
 UPDATE T_MOEDA SET cotacao_para_real = 520000.00 WHERE simbolo = 'BTC';
