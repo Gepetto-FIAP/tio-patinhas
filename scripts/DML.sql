@@ -118,17 +118,18 @@ INSERT INTO T_TRANSACAO (id_transacao, id_carteira, id_investimento, id_moeda, t
 VALUES (SEQ_TRANSACAO.NEXTVAL, 4, 6, 4, 'VENDA', 12000.00, 11880.00, 120.00, 1000.0, 'CONCLUIDA');
 
 -- Insert some sample Transferencias
-INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia) 
-VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 1, 2, 1000.00, 'CONCLUIDA');
+-- Insert some sample Transferencias ajustado
+INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia, timestamp_transferencia)
+VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 1, 2, 1000.00, 'CONCLUIDA', SYSTIMESTAMP);
 
-INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia) 
-VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 3, 1, 5000.00, 'CONCLUIDA');
+INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia, timestamp_transferencia)
+VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 3, 1, 5000.00, 'CONCLUIDA', SYSTIMESTAMP);
 
-INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia) 
-VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 2, 4, 2500.00, 'PENDENTE');
+INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia, timestamp_transferencia)
+VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 2, 4, 2500.00, 'PENDENTE', SYSTIMESTAMP);
 
-INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia) 
-VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 5, 3, 10000.00, 'CONCLUIDA');
+INSERT INTO T_TRANSFERENCIA (id_transferencia, id_carteira_remetente, id_carteira_destinatario, valor_transferencia, status_transferencia, timestamp_transferencia)
+VALUES (SEQ_TRANSFERENCIA.NEXTVAL, 5, 3, 10000.00, 'CONCLUIDA', SYSTIMESTAMP);
 
 -- Sample UPDATE statements
 UPDATE T_MOEDA SET cotacao_para_real = 520000.00 WHERE simbolo = 'BTC';
@@ -141,37 +142,55 @@ UPDATE T_PREFERENCIAS SET tema = 'dark' WHERE id_usuario = 1;
 -- DELETE FROM T_TRANSFERENCIA WHERE status_transferencia = 'ERRO' AND data_transferencia < SYSDATE - 30;
 
 -- Sample SELECT statements to verify data
--- SELECT * FROM T_USUARIO;
--- SELECT u.email, pf.nome, pf.sobrenome, c.saldo_em_real 
--- FROM T_USUARIO u 
--- JOIN T_PF pf ON u.id_usuario = pf.id_usuario 
--- JOIN T_CARTEIRA c ON u.id_usuario = c.id_usuario;
+-- Consultar todos os usuários
+SELECT * FROM T_USUARIO;
 
--- SELECT u.email, pj.nome_fantasia, pj.ramo, c.saldo_em_real 
--- FROM T_USUARIO u 
--- JOIN T_PJ pj ON u.id_usuario = pj.id_usuario 
--- JOIN T_CARTEIRA c ON u.id_usuario = c.id_usuario;
+-- Consultar Pessoas Físicas com suas carteiras
+SELECT u.email, pf.nome, pf.sobrenome, c.saldo_em_real
+FROM T_USUARIO u
+JOIN T_PF pf ON u.id_usuario = pf.id_usuario
+JOIN T_CARTEIRA c ON u.id_usuario = c.id_usuario;
 
--- SELECT m.nome, m.simbolo, COUNT(i.id_investimento) as total_investidores
--- FROM T_MOEDA m
--- LEFT JOIN T_INVESTIMENTO i ON m.id_moeda = i.id_moeda
--- GROUP BY m.nome, m.simbolo
--- ORDER BY total_investidores DESC;
+-- Consultar Pessoas Jurídicas com suas carteiras
+SELECT u.email, pj.nome_fantasia, pj.ramo, c.saldo_em_real
+FROM T_USUARIO u
+JOIN T_PJ pj ON u.id_usuario = pj.id_usuario
+JOIN T_CARTEIRA c ON u.id_usuario = c.id_usuario;
 
--- SELECT 
---     CASE WHEN u.tipo = 'PF' THEN pf.nome ELSE pj.nome_fantasia END as nome_usuario,
---     t.tipo_operacao,
---     m.nome as moeda,
---     t.quantidade_moeda,
---     t.valor_total_transacao,
---     t.status_transacao,
---     t.data_transacao
--- FROM T_TRANSACAO t
--- JOIN T_CARTEIRA c ON t.id_carteira = c.id_carteira
--- JOIN T_USUARIO u ON c.id_usuario = u.id_usuario
--- LEFT JOIN T_PF pf ON u.id_usuario = pf.id_usuario AND u.tipo = 'PF'
--- LEFT JOIN T_PJ pj ON u.id_usuario = pj.id_usuario AND u.tipo = 'PJ'
--- JOIN T_MOEDA m ON t.id_moeda = m.id_moeda
--- ORDER BY t.data_transacao DESC;
+-- Consultar moedas mais populares
+SELECT m.nome, m.simbolo, COUNT(i.id_investimento) as total_investidores
+FROM T_MOEDA m
+LEFT JOIN T_INVESTIMENTO i ON m.id_moeda = i.id_moeda
+GROUP BY m.nome, m.simbolo
+ORDER BY total_investidores DESC;
+
+-- Consultar histórico de transações
+SELECT
+    CASE WHEN u.tipo = 'PF' THEN pf.nome ELSE pj.nome_fantasia END as nome_usuario,
+    t.tipo_operacao,
+    m.nome as moeda,
+    t.quantidade_moeda,
+    t.valor_total_transacao,
+    t.status_transacao,
+    t.data_transacao
+FROM T_TRANSACAO t
+JOIN T_CARTEIRA c ON t.id_carteira = c.id_carteira
+JOIN T_USUARIO u ON c.id_usuario = u.id_usuario
+LEFT JOIN T_PF pf ON u.id_usuario = pf.id_usuario AND u.tipo = 'PF'
+LEFT JOIN T_PJ pj ON u.id_usuario = pj.id_usuario AND u.tipo = 'PJ'
+JOIN T_MOEDA m ON t.id_moeda = m.id_moeda
+ORDER BY t.data_transacao DESC;
+
+-- Consultar todas as moedas disponíveis
+SELECT * FROM T_MOEDA ORDER BY nome;
+
+-- Consultar transferências realizadas
+SELECT
+    t.id_transferencia,
+    t.valor_transferencia,
+    t.status_transferencia,
+    t.data_transferencia
+FROM T_TRANSFERENCIA t
+ORDER BY t.data_transferencia DESC;
 
 COMMIT;

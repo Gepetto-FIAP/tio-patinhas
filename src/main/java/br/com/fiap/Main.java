@@ -51,7 +51,7 @@ public class Main {
         System.out.println("5 - TRANSFERIR SALDO");
         System.out.println("6 - COMPRAR MOEDA");
         System.out.println("7 - VENDER MOEDA");
-        System.out.println("8 - CONSULTAR TRANSACAO");
+        System.out.println("8 - CONSULTAR TRANSACAO (INVESTIMENTOS EM MOEDAS)");
         System.out.println("9 - CONSULTAR TRANSFERENCIA");
         System.out.println("10 - TESTAR FUNCIONALIDADES DE MOEDA (DATABASE)");
     }

@@ -107,11 +107,9 @@ CREATE TABLE T_TRANSFERENCIA (
     id_carteira_destinatario NUMBER NOT NULL,
     valor_transferencia NUMBER(15,2) NOT NULL CHECK (valor_transferencia > 0),
     status_transferencia VARCHAR2(20) DEFAULT 'PENDENTE' NOT NULL CHECK (status_transferencia IN ('ERRO', 'PENDENTE', 'CONCLUIDA')),
-    data_transferencia DATE DEFAULT SYSDATE,
-    hora_transferencia TIMESTAMP DEFAULT SYSTIMESTAMP,
+    timestamp_transferencia TIMESTAMP DEFAULT SYSTIMESTAMP,
     CONSTRAINT FK_TRANSFERENCIA_REMETENTE FOREIGN KEY (id_carteira_remetente) REFERENCES T_CARTEIRA(id_carteira) ON DELETE CASCADE,
     CONSTRAINT FK_TRANSFERENCIA_DESTINATARIO FOREIGN KEY (id_carteira_destinatario) REFERENCES T_CARTEIRA(id_carteira) ON DELETE CASCADE,
-    CONSTRAINT CK_TRANSFERENCIA_DIFERENTES CHECK (id_carteira_remetente != id_carteira_destinatario)
 );
 
 CREATE TABLE T_PREFERENCIAS (
@@ -137,5 +135,24 @@ CREATE INDEX IDX_TRANSFERENCIA_REMETENTE ON T_TRANSFERENCIA(id_carteira_remetent
 CREATE INDEX IDX_TRANSFERENCIA_DESTINATARIO ON T_TRANSFERENCIA(id_carteira_destinatario);
 CREATE INDEX IDX_TRANSFERENCIA_DATA ON T_TRANSFERENCIA(data_transferencia);
 CREATE INDEX IDX_PREFERENCIAS_USUARIO ON T_PREFERENCIAS(id_usuario);
+
+-- ALTER TABLE examples for demonstration (optional modifications)
+-- These demonstrate ALTER capabilities, can be uncommented if needed
+
+-- Add a new column to track last update time
+-- ALTER TABLE T_MOEDA ADD data_atualizacao TIMESTAMP DEFAULT SYSTIMESTAMP;
+
+-- Modify column size if needed
+-- ALTER TABLE T_USUARIO MODIFY email VARCHAR2(320);
+
+-- Add a new constraint
+-- ALTER TABLE T_CARTEIRA ADD CONSTRAINT CK_SALDO_MAXIMO CHECK (saldo_em_real <= 99999999999999.99);
+
+-- Drop and recreate a constraint
+-- ALTER TABLE T_TRANSFERENCIA DROP CONSTRAINT CK_TRANSFERENCIA_DIFERENTES;
+-- ALTER TABLE T_TRANSFERENCIA ADD CONSTRAINT CK_TRANSFERENCIA_DIFERENTES CHECK (id_carteira_remetente != id_carteira_destinatario);
+
+-- Rename a column (if needed)
+-- ALTER TABLE T_PREFERENCIAS RENAME COLUMN receber_notificacoes TO notificacoes_ativas;
 
 COMMIT;

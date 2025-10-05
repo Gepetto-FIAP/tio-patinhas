@@ -1,0 +1,15 @@
+LISTA DE MOEDAS:
+===============
+
+Nome: Bitcoin
+Símbolo: BTC
+Cotação: R$ 500000.0
+
+Nome: Solana
+Símbolo: SOL
+Cotação: R$ 200.0
+
+Nome: Ethereum
+Símbolo: ETH
+Cotação: R$ 2000.0
+
