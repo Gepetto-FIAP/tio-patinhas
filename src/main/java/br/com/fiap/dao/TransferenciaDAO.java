@@ -31,6 +31,8 @@ public class TransferenciaDAO {
                     transferencia.setId(id);
                     return id;
                 }
+            } catch (SQLException e) {
+                System.out.println("[Erro] Não foi possível obter o ID da transferência: " + e.getMessage());
             }
         }
         return -1;
@@ -44,6 +46,8 @@ public class TransferenciaDAO {
             ps.setString(1, transferencia.getStatus().name());
             ps.setInt(2, transferencia.getId());
             ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("[Erro] Não foi possível atualizar transferência: " + e.getMessage());
         }
     }
 
@@ -70,6 +74,8 @@ public class TransferenciaDAO {
 
                     return transferencia;
                 }
+            } catch (SQLException e) {
+                System.out.println("[Erro] Não foi possível consultar transferência: " + e.getMessage());
             }
         }
         return null;

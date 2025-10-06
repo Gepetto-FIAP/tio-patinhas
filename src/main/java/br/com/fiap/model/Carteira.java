@@ -1,9 +1,9 @@
 package br.com.fiap.model;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.ArrayList;
+
 import br.com.fiap.dao.CarteiraDAO;
+import br.com.fiap.dao.InvestimentoDAO;
 import br.com.fiap.dao.TransferenciaDAO;
 
 import java.time.LocalDateTime;
@@ -16,19 +16,19 @@ public class Carteira {
     private double saldoEmReal;
 
     public Carteira() {
-        this.investimentos = new ArrayList<>();
-        this.transferencias = new ArrayList<>();
+
     }
 
     public Carteira( Usuario usuario) {
         this.usuario = usuario;
-        this.investimentos = new ArrayList<>();
-        this.transferencias = new ArrayList<>();
         this.saldoEmReal = 0;
     }
 
-    public void adicionarSaldo(double valor) {
+    public void adicionarSaldo(double valor) throws SQLException {
+        CarteiraDAO dao = new CarteiraDAO();
+        dao.depositar(this, valor);
         this.saldoEmReal += valor;
+
         System.out.printf("[Log] R$ %.2f foi adicionado na conta de %s \n", valor, this.usuario.getNome());
     }
 
@@ -43,16 +43,20 @@ public class Carteira {
         }
     }
 
-    public void comprarMoeda(Moeda moeda, double quantidadeMoeda) {
+    public void comprarMoeda(Moeda moeda, double quantidadeMoeda) throws SQLException {
         System.out.printf("\n[Log] %s está realizando compra de moeda...\n", this.usuario.getNome());
         double valorTaxa = (quantidadeMoeda*moeda.cotacaoParaReal) * usuario.getTaxaTransacao();
         double valorLiquido = (quantidadeMoeda*moeda.cotacaoParaReal) ;
 
-        Investimento investimento = consultarInvestimentos(moeda);
+        Investimento investimento = consultarInvestimentos(moeda, this);
 
         if (investimento == null) {
             investimento = new Investimento(moeda, this);
-            this.investimentos.add(investimento);
+            InvestimentoDAO dao = new InvestimentoDAO();
+            int idInvestimento = dao.inserir(investimento);
+            investimento.setId( idInvestimento  );
+            System.out.println(idInvestimento + " id investimento");
+            //this.investimentos.add(investimento);
         }
 
         Transacao novaTransacao = new Transacao(
@@ -65,24 +69,23 @@ public class Carteira {
                 valorTaxa,
                 quantidadeMoeda,
                 Status.PENDENTE,
-                "",
-                ""
+                LocalDateTime.now()
         );
 
-        investimento.getTransacoes().add(novaTransacao);
+        //investimento.getTransacoes().add(novaTransacao);
         investimento.validarTransacao(quantidadeMoeda, TipoOperacao.COMPRA, novaTransacao, valorLiquido, valorTaxa);
     }
 
-    public void venderMoeda(Moeda moeda, double quantidadeMoeda) {
+    public void venderMoeda(Moeda moeda, double quantidadeMoeda) throws SQLException {
         System.out.printf("\n[Log] %s está realizando venda de moeda...\n", this.usuario.getNome());
 
         double valorTaxa = (quantidadeMoeda * moeda.cotacaoParaReal) * usuario.getTaxaTransacao();
         double valorLiquido = (quantidadeMoeda * moeda.cotacaoParaReal) - valorTaxa;
 
-        Investimento investimento = consultarInvestimentos(moeda);
+        Investimento investimento = consultarInvestimentos(moeda, this);
 
         if (investimento == null) {
-            System.out.print("[Log] Você não possui esta moeda. \n");
+            System.out.print("[Log] Usuario não possui esta moeda. \n");
             return;
         }
 
@@ -96,10 +99,10 @@ public class Carteira {
                 valorTaxa,
                 quantidadeMoeda,
                 Status.PENDENTE,
-                "", ""
+                LocalDateTime.now()
         );
 
-        investimento.getTransacoes().add(novaTransacao);
+        //investimento.getTransacoes().add(novaTransacao);
         investimento.validarTransacao(quantidadeMoeda, TipoOperacao.VENDA, novaTransacao, valorLiquido, valorTaxa);
     }
 
@@ -126,15 +129,13 @@ public class Carteira {
 
     public void consultarTransacao (int id) {
         System.out.printf("\n[Log] %s está realizando consulta transacao...\n", this.usuario.getNome());
-
-
         for (Investimento investimento : this.investimentos) {
-            for (Transacao transacao : investimento.getTransacoes()) {
-                if (transacao.getId() == id) {
-                    transacao.exibir();
-                    return;
-                }
-            }
+//            for (Transacao transacao : investimento.getTransacoes()) {
+//                if (transacao.getId() == id) {
+//                    transacao.exibir();
+//                    return;
+//                }
+//            }
         }
 
         System.out.printf("[Log] Não há transação com o id %d para %s.\n", id, this.getNomeUsuario());
@@ -156,16 +157,11 @@ public class Carteira {
     }
 
 
+    private Investimento consultarInvestimentos (Moeda moeda, Carteira carteira) throws SQLException {
+        InvestimentoDAO dao = new InvestimentoDAO();
 
 
-
-    private Investimento consultarInvestimentos (Moeda moeda) {
-        for (Investimento investimento : this.investimentos) {
-            if (investimento.getMoeda().getId() == moeda.getId()) {
-                return investimento;
-            }
-        }
-        return null;
+        return dao.consultarInvestimento(moeda, carteira);
     }
 
     public boolean removerSaldo(double valor) {
@@ -177,25 +173,23 @@ public class Carteira {
         return false;
     }
 
-    public boolean removerSaldoCarteira(double valor, Carteira carteira) {
+    public void removerSaldoCarteira(double valor, Carteira carteira) {
         try {
             CarteiraDAO dao = new CarteiraDAO();
-            dao.sacar(carteira.id, valor);
+            dao.sacar(carteira, valor);
             dao.fecharConexao();
 
             System.out.printf("[Log] R$ %.2f foi removido da conta de %s \n", valor, carteira.usuario.getNome());
-            return true;
         } catch (SQLException e) {
             System.out.println("[Erro] Não foi possível remover saldo: " + e.getMessage());
         }
-        return false;
     }
 
 
     public void adicionarSaldoCarteira(double valor, Carteira carteira) {
         try {
             CarteiraDAO dao = new CarteiraDAO();
-            dao.depositar(carteira.id, valor);
+            dao.depositar(carteira, valor);
             dao.fecharConexao();
             System.out.printf("[Log] R$ %.2f foi adicionado na conta de %s \n", valor, carteira.usuario.getNome());
         } catch (SQLException e) {

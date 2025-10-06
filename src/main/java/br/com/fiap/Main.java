@@ -262,10 +262,8 @@ public class Main {
                         }
                         if (novoUsuario != null) {
                             try {
-
                                 UsuarioDAO dao = new UsuarioDAO();
                                 int id = dao.inserir(novoUsuario);
-
                                 System.out.println("[✔] Usuário criado com sucesso!");
                             } catch (Exception e) {
                                 System.out.println("[x] Erro ao inserir usuário: " + e.getMessage());
