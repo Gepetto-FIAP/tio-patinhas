@@ -171,15 +171,6 @@ mvn exec:java -Dexec.mainClass="br.com.fiap.Main"
 - Selecione a **Opção 17** para teste completo de integração
 - Todas as operações CRUD serão testadas automaticamente
 
-## 📊 Estatísticas do Projeto
-
-- **7 DAOs** implementados com CRUD completo
-- **17 métodos de teste** na classe Main
-- **50+ métodos** de operações de banco
-- **Collections** implementadas (ArrayList, HashMap)
-- **Try-with-resources** em todos os métodos
-- **Integração completa** com Oracle FIAP
-
 ## Observações Técnicas
 
 - ✅ Todas as operações de banco são feitas com PreparedStatement para segurança
@@ -191,9 +182,3 @@ mvn exec:java -Dexec.mainClass="br.com.fiap.Main"
 - ✅ Uso adequado de Collections (ArrayList, HashMap)
 - ✅ Métodos de agrupamento, ordenação e filtragem
 - ✅ Integridade referencial mantida em todas as operações
-
-## 🎯 Status do Projeto
-
-**✅ SPRINT 6 - 100% COMPLETA**
-
-O projeto está totalmente pronto para entrega, atendendo a todos os requisitos da Sprint 6 com implementação completa de integração Java + Oracle Database.
