@@ -1,11 +1,17 @@
 package br.com.fiap.dao;
 
-import br.com.fiap.factory.ConnectionFactory;
-import br.com.fiap.model.*;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.fiap.factory.ConnectionFactory;
+import br.com.fiap.model.Carteira;
+import br.com.fiap.model.PessoaFisica;
+import br.com.fiap.model.PessoaJuridica;
+import br.com.fiap.model.Usuario;
 
 public class UsuarioDAO {
     public List<Usuario> listarTodos() throws SQLException {
@@ -337,5 +343,51 @@ public class UsuarioDAO {
                 conn.setAutoCommit(true);
             }
         }
+    }
+
+    public java.util.Map<String, java.util.List<Usuario>> agruparUsuariosPorTipo() throws SQLException {
+        java.util.Map<String, java.util.List<Usuario>> usuariosPorTipo = new java.util.HashMap<>();
+        List<Usuario> todosUsuarios = listarTodos();
+        
+        for (Usuario usuario : todosUsuarios) {
+            String tipo = usuario.tipo;
+            usuariosPorTipo.computeIfAbsent(tipo, k -> new java.util.ArrayList<>()).add(usuario);
+        }
+        
+        return usuariosPorTipo;
+    }
+
+    public java.util.List<Usuario> buscarUsuariosOrdenadosPorNome() throws SQLException {
+        List<Usuario> usuarios = listarTodos();
+        
+        // Ordenação usando Collections.sort com lambda
+        usuarios.sort((u1, u2) -> u1.getNome().compareToIgnoreCase(u2.getNome()));
+        
+        return usuarios;
+    }
+
+    public java.util.Map<String, Integer> contarUsuariosPorPais() throws SQLException {
+        java.util.Map<String, Integer> contagem = new java.util.HashMap<>();
+        List<Usuario> todosUsuarios = listarTodos();
+        
+        for (Usuario usuario : todosUsuarios) {
+            String pais = usuario.getPais();
+            contagem.put(pais, contagem.getOrDefault(pais, 0) + 1);
+        }
+        
+        return contagem;
+    }
+
+    public java.util.List<Usuario> filtrarUsuariosPorEstado(String estado) throws SQLException {
+        List<Usuario> todosUsuarios = listarTodos();
+        java.util.List<Usuario> usuariosFiltrados = new java.util.ArrayList<>();
+        
+        for (Usuario usuario : todosUsuarios) {
+            if (usuario.getEstado().equalsIgnoreCase(estado)) {
+                usuariosFiltrados.add(usuario);
+            }
+        }
+        
+        return usuariosFiltrados;
     }
 }

@@ -60,6 +60,51 @@ public class Transacao {
     public int getId() {
         return id;
     }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public Carteira getCarteira() {
+        return carteira;
+    }
+    
+    public Investimento getInvestimento() {
+        return investimento;
+    }
+    
+    public Moeda getMoeda() {
+        return moeda;
+    }
+    
+    public TipoOperacao getTipoOperacao() {
+        return tipoOperacao;
+    }
+    
+    public double getValorTotalTransacao() {
+        return valorTotalTransacao;
+    }
+    
+    public double getValorLiquidoTransacao() {
+        return valorLiquidoTransacao;
+    }
+    
+    public double getValorTaxaTransacao() {
+        return valorTaxaTransacao;
+    }
+    
+    public Double getQuantidadeMoeda() {
+        return quantidadeMoeda;
+    }
+    
+    public Status getStatus() {
+        return status;
+    }
+    
+    public LocalDateTime getDataTransacao() {
+        return dataTransacao;
+    }
+    
     public void setStatus(Status status) {
         this.status = status;
     }

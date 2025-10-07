@@ -1,12 +1,11 @@
 package br.com.fiap.model;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import br.com.fiap.dao.CarteiraDAO;
 import br.com.fiap.dao.InvestimentoDAO;
 import br.com.fiap.dao.TransferenciaDAO;
-
-import java.time.LocalDateTime;
 
 public class Carteira {
     private int id;
@@ -177,8 +176,6 @@ public class Carteira {
         try {
             CarteiraDAO dao = new CarteiraDAO();
             dao.sacar(carteira, valor);
-            dao.fecharConexao();
-
             System.out.printf("[Log] R$ %.2f foi removido da conta de %s \n", valor, carteira.usuario.getNome());
         } catch (SQLException e) {
             System.out.println("[Erro] Não foi possível remover saldo: " + e.getMessage());
@@ -190,7 +187,6 @@ public class Carteira {
         try {
             CarteiraDAO dao = new CarteiraDAO();
             dao.depositar(carteira, valor);
-            dao.fecharConexao();
             System.out.printf("[Log] R$ %.2f foi adicionado na conta de %s \n", valor, carteira.usuario.getNome());
         } catch (SQLException e) {
             System.out.println("[Erro] Não foi possível adicionar saldo: " + e.getMessage());
@@ -202,7 +198,6 @@ public class Carteira {
         try {
             CarteiraDAO dao = new CarteiraDAO();
             saldo = dao.getSaldo(id);
-            dao.fecharConexao();
         } catch (SQLException e) {
             System.out.println("[Erro] Não foi possível consultar saldo: " + e.getMessage());
         }

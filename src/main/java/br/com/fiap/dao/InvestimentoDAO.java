@@ -1,13 +1,13 @@
 package br.com.fiap.dao;
-import br.com.fiap.factory.ConnectionFactory;
-import br.com.fiap.model.Carteira;
-import br.com.fiap.model.Investimento;
-import br.com.fiap.model.Moeda;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import br.com.fiap.factory.ConnectionFactory;
+import br.com.fiap.model.Carteira;
+import br.com.fiap.model.Investimento;
+import br.com.fiap.model.Moeda;
 
 public class InvestimentoDAO {
     private Connection conexao;
@@ -17,7 +17,8 @@ public class InvestimentoDAO {
 
     public void atualizarQuantidadeMoeda (Investimento investimento) throws SQLException {
         String sql = "UPDATE T_INVESTIMENTO SET quantidade_moeda = ? WHERE id_investimento = ?";
-        try (PreparedStatement ps = conexao.prepareStatement(sql)) {
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             System.out.println(investimento.getQuantidadeMoeda() + " qunatidade");
             ps.setDouble(1, investimento.getQuantidadeMoeda()); // Substitua pelo valor real da quantidade de moeda
             ps.setInt(2, investimento.getId()); // Substitua pelo ID real do investimento
@@ -58,7 +59,8 @@ public class InvestimentoDAO {
 
     public Investimento consultarInvestimento (Moeda moeda, Carteira carteira) {
         String sql = "SELECT id_investimento, quantidade_moeda FROM T_INVESTIMENTO WHERE id_moeda = ? AND id_carteira = ?";
-        try (PreparedStatement ps = conexao.prepareStatement(sql)) {
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, moeda.getId());
             ps.setInt(2, carteira.getId());
             var rs = ps.executeQuery();

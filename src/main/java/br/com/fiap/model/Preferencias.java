@@ -24,4 +24,31 @@ public class Preferencias {
     public void mudarReceberNotificacoes(boolean receberNotificacoes) {
         this.receberNotificacoes = receberNotificacoes;
     }
+
+    // Getters e Setters
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public String getTema() {
+        return tema;
+    }
+
+    public String getIdioma() {
+        return idioma;
+    }
+
+    public boolean isReceberNotificacoes() {
+        return receberNotificacoes;
+    }
 }

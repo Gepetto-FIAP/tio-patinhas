@@ -1,11 +1,14 @@
 package br.com.fiap.dao;
 
-import br.com.fiap.factory.ConnectionFactory;
-import br.com.fiap.model.Moeda;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.fiap.factory.ConnectionFactory;
+import br.com.fiap.model.Moeda;
 
 public class MoedaDAO {
 
@@ -185,6 +188,56 @@ public class MoedaDAO {
             }
         }
         return moedas;
+    }
+
+    public java.util.Map<String, Moeda> buscarMoedasPorSimbolo() throws SQLException {
+        java.util.Map<String, Moeda> moedasPorSimbolo = new java.util.HashMap<>();
+        String sql = "SELECT id_moeda, nome, simbolo, cotacao_para_real FROM T_MOEDA ORDER BY nome";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Moeda moeda = criarMoedaFromResultSet(rs);
+                moedasPorSimbolo.put(moeda.getSimbolo(), moeda);
+            }
+        }
+        return moedasPorSimbolo;
+    }
+
+    public java.util.List<Moeda> buscarMoedasOrdenadasPorCotacao() throws SQLException {
+        java.util.List<Moeda> moedas = new java.util.ArrayList<>();
+        String sql = "SELECT id_moeda, nome, simbolo, cotacao_para_real FROM T_MOEDA ORDER BY cotacao_para_real DESC";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                moedas.add(criarMoedaFromResultSet(rs));
+            }
+        }
+        
+        // Ordenação adicional usando Collections
+        moedas.sort((m1, m2) -> Double.compare(m2.getCotacaoParaReal(), m1.getCotacaoParaReal()));
+        return moedas;
+    }
+
+    public java.util.Map<String, Integer> contarMoedasPorNome() throws SQLException {
+        java.util.Map<String, Integer> contagem = new java.util.HashMap<>();
+        String sql = "SELECT nome FROM T_MOEDA";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                contagem.put(nome, contagem.getOrDefault(nome, 0) + 1);
+            }
+        }
+        return contagem;
     }
 
     private Moeda criarMoedaFromResultSet(ResultSet rs) throws SQLException {
