@@ -105,8 +105,6 @@ O projeto possui as seguintes tabelas principais:
 - `T_TRANSFERENCIA` - Transferências entre usuários
 - `T_PREFERENCIAS` - Preferências dos usuários
 
-## Requisitos da Sprint 6 - 100% Atendidos
-
 ### ✅ **Todas as classes Java em arquivos separados**
 - ✅ Cada classe em arquivo próprio
 - ✅ Estrutura organizada em packages
