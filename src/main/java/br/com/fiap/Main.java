@@ -53,7 +53,14 @@ public class Main {
         System.out.println("7 - VENDER MOEDA");
         System.out.println("8 - CONSULTAR TRANSACAO (INVESTIMENTOS EM MOEDAS)");
         System.out.println("9 - CONSULTAR TRANSFERENCIA");
-        System.out.println("10 - TESTAR FUNCIONALIDADES DE MOEDA (DATABASE)");
+        System.out.println("\n=== TESTES DE INTEGRAÇÃO COM BANCO DE DADOS ===");
+        System.out.println("10 - TESTAR MOEDA DAO");
+        System.out.println("11 - TESTAR INVESTIMENTO DAO");
+        System.out.println("12 - TESTAR TRANSACAO DAO");
+        System.out.println("13 - TESTAR PREFERENCIAS DAO");
+        System.out.println("14 - TESTAR TRANSFERENCIA DAO");
+        System.out.println("15 - TESTAR CARTEIRA DAO");
+        System.out.println("\n0 - SAIR");
     }
 
 
@@ -127,6 +134,136 @@ public class Main {
         }
     }
 
+    public static void testarFuncionalidadesInvestimento() {
+        System.out.println("\n=== TESTANDO FUNCIONALIDADES DE INVESTIMENTO - DATABASE ===");
+
+        try {
+            InvestimentoDAO investimentoDAO = new InvestimentoDAO();
+
+            System.out.println("\n1. TESTANDO LISTAGEM DE TODOS OS INVESTIMENTOS:");
+            List<Investimento> todos = investimentoDAO.listarTodos();
+            System.out.println("Total de investimentos: " + todos.size());
+
+            System.out.println("\n2. TESTANDO BUSCA POR CARTEIRA:");
+            List<Investimento> investimentosCarteira1 = investimentoDAO.buscarPorCarteira(1);
+            System.out.println("Investimentos da carteira 1: " + investimentosCarteira1.size());
+
+            System.out.println("\n3. TESTANDO CONTAGEM:");
+            int total = investimentoDAO.contarInvestimentos();
+            System.out.println("Total de investimentos no sistema: " + total);
+
+            System.out.println("\n=== TESTE FINALIZADO ===");
+
+        } catch (Exception e) {
+            System.err.println("[ERRO] Falha ao testar funcionalidades de investimento: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void testarFuncionalidadesTransacao() {
+        System.out.println("\n=== TESTANDO FUNCIONALIDADES DE TRANSAÇÃO - DATABASE ===");
+
+        try {
+            TransacaoDAO transacaoDAO = new TransacaoDAO();
+
+            System.out.println("\n1. TESTANDO LISTAGEM DE TODAS AS TRANSAÇÕES:");
+            List<Transacao> todas = transacaoDAO.listarTodas();
+            System.out.println("Total de transações: " + todas.size());
+
+            System.out.println("\n2. TESTANDO BUSCA POR STATUS:");
+            List<Transacao> concluidas = transacaoDAO.buscarPorStatus(Status.CONCLUIDA);
+            System.out.println("Transações concluídas: " + concluidas.size());
+
+            System.out.println("\n3. TESTANDO CONTAGEM:");
+            int total = transacaoDAO.contarTransacoes();
+            System.out.println("Total de transações no sistema: " + total);
+
+            System.out.println("\n=== TESTE FINALIZADO ===");
+
+        } catch (Exception e) {
+            System.err.println("[ERRO] Falha ao testar funcionalidades de transação: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void testarFuncionalidadesPreferencias() {
+        System.out.println("\n=== TESTANDO FUNCIONALIDADES DE PREFERÊNCIAS - DATABASE ===");
+
+        try {
+            PreferenciasDAO preferenciasDAO = new PreferenciasDAO();
+
+            System.out.println("\n1. TESTANDO LISTAGEM DE TODAS AS PREFERÊNCIAS:");
+            List<Preferencias> todas = preferenciasDAO.listarTodas();
+            System.out.println("Total de preferências: " + todas.size());
+            for (Preferencias p : todas) {
+                System.out.printf("- Usuário: %s | Tema: %s | Idioma: %s | Notificações: %s\n",
+                        p.getUsuario() != null ? p.getUsuario().getNome() : "N/A",
+                        p.getTema(),
+                        p.getIdioma(),
+                        p.isReceberNotificacoes() ? "Sim" : "Não");
+            }
+
+            System.out.println("\n2. TESTANDO BUSCA POR TEMA:");
+            List<Preferencias> dark = preferenciasDAO.buscarPorTema("dark");
+            System.out.println("Usuários com tema dark: " + dark.size());
+
+            System.out.println("\n3. TESTANDO CONTAGEM:");
+            int total = preferenciasDAO.contarPreferencias();
+            System.out.println("Total de preferências no sistema: " + total);
+
+            System.out.println("\n=== TESTE FINALIZADO ===");
+
+        } catch (Exception e) {
+            System.err.println("[ERRO] Falha ao testar funcionalidades de preferências: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void testarFuncionalidadesTransferencia() {
+        System.out.println("\n=== TESTANDO FUNCIONALIDADES DE TRANSFERÊNCIA - DATABASE ===");
+
+        try {
+            TransferenciaDAO transferenciaDAO = new TransferenciaDAO();
+
+            System.out.println("\n1. TESTANDO LISTAGEM DE TODAS AS TRANSFERÊNCIAS:");
+            List<Transferencia> todas = transferenciaDAO.listarTodas();
+            System.out.println("Total de transferências: " + todas.size());
+
+            System.out.println("\n=== TESTE FINALIZADO ===");
+
+            transferenciaDAO.fecharConexao();
+
+        } catch (Exception e) {
+            System.err.println("[ERRO] Falha ao testar funcionalidades de transferência: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void testarFuncionalidadesCarteira() {
+        System.out.println("\n=== TESTANDO FUNCIONALIDADES DE CARTEIRA - DATABASE ===");
+
+        try {
+            CarteiraDAO carteiraDAO = new CarteiraDAO();
+
+            System.out.println("\n1. TESTANDO LISTAGEM DE TODAS AS CARTEIRAS:");
+            java.util.List<Carteira> todas = carteiraDAO.listarTodas();
+            System.out.println("Total de carteiras: " + todas.size());
+            for (Carteira c : todas) {
+                System.out.printf("- ID: %d | Saldo: R$ %.2f | Usuário: %s\n",
+                        c.getId(),
+                        c.getSaldo(),
+                        c.getUsuario() != null ? c.getUsuario().getNome() : "N/A");
+            }
+
+            System.out.println("\n=== TESTE FINALIZADO ===");
+
+            carteiraDAO.fecharConexao();
+
+        } catch (Exception e) {
+            System.err.println("[ERRO] Falha ao testar funcionalidades de carteira: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -441,6 +578,21 @@ public class Main {
                     }
                     case 10 -> {
                         testarFuncionalidadesMoeda();
+                    }
+                    case 11 -> {
+                        testarFuncionalidadesInvestimento();
+                    }
+                    case 12 -> {
+                        testarFuncionalidadesTransacao();
+                    }
+                    case 13 -> {
+                        testarFuncionalidadesPreferencias();
+                    }
+                    case 14 -> {
+                        testarFuncionalidadesTransferencia();
+                    }
+                    case 15 -> {
+                        testarFuncionalidadesCarteira();
                     }
                     case 0 -> {
                         running = false;

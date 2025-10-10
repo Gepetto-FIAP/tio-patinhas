@@ -24,4 +24,21 @@ public class Preferencias {
     public void mudarReceberNotificacoes(boolean receberNotificacoes) {
         this.receberNotificacoes = receberNotificacoes;
     }
+
+    // Getters
+    public Usuario getUsuario() {
+        return this.usuario;
+    }
+
+    public String getTema() {
+        return this.tema;
+    }
+
+    public String getIdioma() {
+        return this.idioma;
+    }
+
+    public boolean isReceberNotificacoes() {
+        return this.receberNotificacoes;
+    }
 }
