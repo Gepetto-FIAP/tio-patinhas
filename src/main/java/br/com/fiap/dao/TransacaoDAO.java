@@ -13,7 +13,7 @@ public class TransacaoDAO {
     }
 
     public int inserir(Transacao transacao) throws SQLException {
-        String sql = "INSERT INTO T_TRANSACAO (id_transacao, id_carteira, id_investimento, id_moeda, tipo_operacao, valor_total_transacao, valor_liquido_transacao, valor_taxa_transacao, quantidade_moeda, status_transacao, timestamp_transacao) VALUES (SEQ_TRANSFERENCIA.NEXTVAL,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO T_TRANSACAO (id_transacao, id_carteira, id_investimento, id_moeda, tipo_operacao, valor_total_transacao, valor_liquido_transacao, valor_taxa_transacao, quantidade_moeda, status_transacao, timestamp_transacao) VALUES (SEQ_TRANSACAO.NEXTVAL,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = conexao.prepareStatement(sql, new String[]{"id_transacao"})) {
             ps.setInt(1, transacao.getCarteira().getId());
