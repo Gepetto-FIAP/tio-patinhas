@@ -1,6 +1,8 @@
 package br.com.fiap.model;
 
 
+import java.time.LocalDateTime;
+
 public class Transacao {
     private static int contadorId = 0;
     public int id;
@@ -13,8 +15,7 @@ public class Transacao {
     private double valorTaxaTransacao;
     private Double quantidadeMoeda;
     private Status status;
-    private String data;
-    private String hora;
+    private LocalDateTime dataTransacao;
 
     public Transacao (
             Carteira carteira,
@@ -26,8 +27,7 @@ public class Transacao {
             double valorTaxaTransacao,
             Double quantidadeMoeda,
             Status status,
-            String data,
-            String hora
+            LocalDateTime data
     ) {
         this.id = contadorId++;
         this.carteira = carteira;
@@ -39,8 +39,7 @@ public class Transacao {
         this.valorTaxaTransacao = valorTaxaTransacao;
         this.quantidadeMoeda = quantidadeMoeda;
         this.status = status;
-        this.data = data;
-        this.hora = hora;
+        this.dataTransacao = data;
     }
 
     public void exibir() {
@@ -56,12 +55,59 @@ public class Transacao {
                 this.status
         );
     }
+    public Status getStatus() {
+        return status;
+    }
 
+    public Carteira getCarteira() {
+        return carteira;
+    }
+
+    public Investimento getInvestimento() {
+        return investimento;
+    }
+
+    public Moeda getMoeda() {
+        return moeda;
+    }
+
+    public  TipoOperacao getTipoOperacao() {
+        return tipoOperacao;
+    }
+
+    public double getValorTotalTransacao() {
+        return valorTotalTransacao;
+    }
+
+    public double getValorLiquidoTransacao() {
+        return valorLiquidoTransacao;
+    }
+
+    public double getValorTaxaTransacao() {
+        return valorTaxaTransacao;
+    }
+
+    public double getQuantidadeMoeda() {
+        return quantidadeMoeda;
+    }
+
+    public LocalDateTime getDataTransacao() {
+        return dataTransacao;
+    }
+
+    public Status getStatusTransacao() {
+        return status;
+    }
 
     public int getId() {
         return id;
     }
+
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
