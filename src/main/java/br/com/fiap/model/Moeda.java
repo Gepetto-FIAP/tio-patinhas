@@ -1,7 +1,7 @@
 package br.com.fiap.model;
 
 public class Moeda {
-    private static int contadorId;
+    private static int contadorId = 1;
     private int id;
     public String nome;
     public String simbolo;

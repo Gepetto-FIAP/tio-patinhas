@@ -1,6 +1,5 @@
 
 package br.com.fiap;
-
 import br.com.fiap.util.FileManipulation;
 import br.com.fiap.model.*;
 import java.util.InputMismatchException;
@@ -262,10 +261,8 @@ public class Main {
                         }
                         if (novoUsuario != null) {
                             try {
-
                                 UsuarioDAO dao = new UsuarioDAO();
                                 int id = dao.inserir(novoUsuario);
-
                                 System.out.println("[✔] Usuário criado com sucesso!");
                             } catch (Exception e) {
                                 System.out.println("[x] Erro ao inserir usuário: " + e.getMessage());
